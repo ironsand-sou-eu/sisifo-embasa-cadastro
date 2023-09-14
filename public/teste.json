@@ -1,0 +1,71 @@
+{
+    "codigoLancamentoFinanceiro" : 12345,
+    "tipoLancamentoFinanceiro" : "RECEITA",
+    "unidadeOrganizacional" : {
+      "chave" : 12345,
+      "valor" : "..."
+    },
+    "tipoResponsavelPagamento" : "CLIENTE",
+    "flagCobrarCliente" : true,
+    "favorecido" : {
+      "chave" : 12345,
+      "valor" : "..."
+    },
+    "data" : 12345,
+    "dataVencimento" : 12345,
+    "tipoDocumento" : {
+      "chave" : 12345,
+      "valor" : "..."
+    },
+    "numeroDocumento" : "...",
+    "valorDocumento" : 12345.0,
+    "planoConta" : {
+      "chave" : 12345,
+      "valor" : "..."
+    },
+    "descricao" : "...",
+    "responsavelPagamento" : {
+      "chave" : 12345,
+      "valor" : "..."
+    },
+    "cliente" : {
+      "chave" : 12345,
+      "valor" : "..."
+    },
+    "solicitacaoRecebimentoPagtoWs" : [ {
+      "codigoSolicitacaoRecebimentoPagto" : 12345,
+      "tipoSolicitacaoRecebimentoPagto" : "RECEITA_REEMBOLSO",
+      "dataVencimento" : 12345,
+      "valorSolicitacao" : 12345.0,
+      "valorSolicitacaoReal" : 12345.0,
+      "pessoa" : {
+        "chave" : 12345,
+        "valor" : "..."
+      },
+      "formaPagamento" : "DINHEIRO",
+      "numeroParcelas" : 12345,
+      "tipoRecorrencia" : "ANUAL",
+      "flagNotificarResp" : true,
+      "situacaoSolicitacao" : "PAGO",
+      "dataUltimoPagto" : 12345,
+      "valorPago" : 12345.0,
+      "valorPendente" : 12345.0,
+      "justificativa" : "...",
+      "valorEntrada" : 12345.0,
+      "formaPagamentoEntrada" : "TRANSFERENCIA",
+      "valorSaldo" : 12345.0,
+      "dataPrimeiroVencto" : 12345,
+      "condicaoPagamento" : {
+        "chave" : 12345,
+        "valor" : "..."
+      },
+      "receitaDespesa" : {
+        "chave" : 12345,
+        "valor" : "..."
+      }
+    }
+    ],
+    "identificador" : "...",
+    "totalArquivos" : 12345,
+    "privado" : true,
+}
