@@ -1,5 +1,4 @@
 import fetchSajInfo, { endPoints, extractOptionsArray, makeProjurisPost } from "../connectors/projuris";
-import SajParteDataStructure from "../data-structures/SajPessoaDataStructure";
 import ProcessoAlreadyExistsException from "../exceptions/ProcessoAlreadyExistsException";
 
 let msgSetter

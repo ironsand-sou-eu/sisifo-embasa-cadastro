@@ -1,6 +1,3 @@
-import UnidadeJurisdicionalDataStructure from "./UnidadeJurisdicionalDataStructure"
-import ParteDataStructure from "./ParteDataStructure"
-
 class ProcessoDataStructure
 {
     constructor(numero, sistema, numeroRegional, url, dataDistribuicao, valorDaCausa,

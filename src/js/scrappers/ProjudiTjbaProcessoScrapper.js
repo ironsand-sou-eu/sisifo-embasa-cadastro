@@ -1,7 +1,7 @@
 import ProcessoDataStructure from "../data-structures/ProcessoDataStructure"
 import UnidadeJurisdicionalDataStructure from "../data-structures/UnidadeJurisdicionalDataStructure"
 import NotProcessoHomepageException from "../exceptions/NotProcessoHomepageException"
-import { tiposParte } from "../enums"
+import { sistemas, tiposParte } from "../enums"
 import ProjudiTjbaAndamentosScrapper from "./ProjudiTjbaAndamentosScrapper"
 import ProjudiTjbaPartesScrapper from "./ProjudiTjbaPartesScrapper"
 
@@ -51,7 +51,7 @@ static #loadPageCheckpoints() {
 static async #ScrappeProcessoInfo() {
     this.#andamentos = await this.#getAndamentos()
     const processoInfo = new ProcessoDataStructure(
-        this.#getNumero(), "projudiTjba", this.#getNumeroRegional(), this.#getUrl(), this.#getDataDistribuicao(),
+        this.#getNumero(), sistemas.projudiTjba, this.#getNumeroRegional(), this.#getUrl(), this.#getDataDistribuicao(),
         this.#getValorDaCausa(), this.#getTipoDeAcao(), this.#getCausaDePedir(),
         this.#getSegredoJustica(), this.#getJuizo(), this.#getJuizAtual(),
         this.#getNumeroProcessoPrincipal(), this.#getNumerosIncidentes(),
@@ -129,7 +129,13 @@ static #getDateFromProjudiTjbaDateString(dateStr) {
         'Dezembro': '12' 
     }
     dateArray[1] = meses[dateArray[1]]
-    return new Date(`${dateArray[2]}-${dateArray[1]}-${dateArray[0]}T${dateArray[3]}:${dateArray[4]}:${dateArray[5] ?? '00'}${timeDiffFromGmt}`)
+    const year = String(dateArray[2]).padStart(4, "0")
+    const month = String(dateArray[1])
+    const day = String(dateArray[0]).padStart(2, "0")
+    const hour = String(dateArray[3]).padStart(2, "0")
+    const minute = String(dateArray[4]).padStart(2, "0")
+    const second = String(dateArray[5] ?? "00").padStart(2, "0")
+    return new Date(`${year}-${month}-${day}T${hour}:${minute}:${second}${timeDiffFromGmt}`)
 }
 
 static #getValorDaCausa() {
@@ -271,7 +277,6 @@ static #getAudienciaFutura() {
     const audienciaRelatedAndamentos = this.#filterAudienciaConcerningAndamentos(this.#andamentos)
     const lastRelevantAudiencia = this.#getLastAudienciaOrNullIfCancelled(audienciaRelatedAndamentos)
     if(!lastRelevantAudiencia) return null
-
     const audienciaProjudiDateString = lastRelevantAudiencia.observacao.match(this.#PROJUDI_EXTENDED_DATE_REGEX)[0]
     const audienciaFutura = {...lastRelevantAudiencia,
         data: this.#getDateFromProjudiTjbaDateString(audienciaProjudiDateString),

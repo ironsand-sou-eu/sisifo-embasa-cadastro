@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-function useMsgSetter(result, setResult) {
+export default function useMsgSetter(result, setResult) {
     useEffect(() => {
         document.addEventListener("click", ev => {
             if (ev.target.classList.contains("copy"))
@@ -33,8 +33,5 @@ function useMsgSetter(result, setResult) {
             });
         }
     };
-
     return { msgSetter };
 }
-
-export default useMsgSetter;

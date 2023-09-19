@@ -3,19 +3,16 @@ import PartesColumn from "./PartesColumn.jsx";
 import Text from "./Text.jsx";
 import Select from "./Select.jsx";
 import Checkbox from "./Checkbox.jsx";
-import Textarea from "./Textarea.jsx";
 import PedidosBox from "./PedidosBox.jsx";
 import Button from "./Button.jsx";
-import { endPoints } from "../../connectors/projuris";
 import useValidator from "../hooks/useValidator.jsx";
+import useUpdateCausaPedir from "../hooks/useUpdateCausaPedir.jsx";
+import { debounce, toBrDateString } from "../../utils/utils.js";
+import hardcoded from "../../hardcodedValues.js";
 
 function PopupForm({ onSubmit, data, updateData }) {
     const [ warningMessages ] = useValidator(data);
-    const filter = {
-        key: "valor",
-        operator: "insentiviveIncludes"
-    };
-
+    const { updateCausaPedir } = useUpdateCausaPedir();
 
     return (
         <form className="form-horizontal" action="" method="post"
@@ -28,15 +25,26 @@ function PopupForm({ onSubmit, data, updateData }) {
                     value={data?.numeroProcesso}
                     placeholder="Número do processo"
                     isDisabled
+                    colWidth="4"
                     />
                 <Text
                     type="text"
-                    name="pastaCliente"
-                    label="Pasta do cliente"
-                    value={data?.pastaCliente}
-                    placeholder="Número no sistema do cliente"
+                    name="matricula"
+                    label="Matrícula"
+                    value={data?.matricula}
+                    placeholder="Matrícula"
                     onChange={event => updateData(event.target.value, event.target.name)}
-                />
+                    colWidth="4"
+                    />
+                <Text
+                    type="text"
+                    name="codLocalidade"
+                    label="Localidade SCI"
+                    value={data?.codLocalidade}
+                    placeholder="Código Localidade SCI"
+                    onChange={event => updateData(event.target.value, event.target.name)}
+                    colWidth="4"
+                    />
             </div>
             <fieldset className="form-group">
                 <legend className="sisifo-v-label">Partes</legend>
@@ -55,130 +63,82 @@ function PopupForm({ onSubmit, data, updateData }) {
             </fieldset>
             <div className="form-group">
                 <Select
-                    name="assuntoCnj"
-                    label="Assunto CNJ"
-                    optionsEndpoint={endPoints.assuntosCnj}
-                    filter={filter}
-                    value={data?.assuntoCnj}
-                    isMulti
-                    hasMultiLevelSource
+                    name="nomeAndamento"
+                    label="Nome andamento"
+                    sheetName={hardcoded.listaNomesAndamentoSheet}
+                    rangeName={hardcoded.listaNomesAndamentoRange}
+                    value={data?.nomeAndamento}
                     onChange={updateData}
                 />
-                <Select
-                    name="assunto"
-                    label="Assunto Projuris"
-                    optionsEndpoint={endPoints.assuntosSaj}
-                    filter={{...filter, key: "nomeAssunto"}}
-                    value={data?.assunto}
-                    onChange={updateData}
+                <Text
+                    type="datetime-local"
+                    name="dataAndamento"
+                    label="Data do andamento"
+                    value={toBrDateString(data?.dataAndamento, true)}
+                    onChange={event => updateData(event.target.value, event.target.name)}
                 />
             </div>
             <div className="form-group">
                 <Select
-                    name="area"
-                    label="Área"
-                    optionsEndpoint={endPoints.areas}
-                    filter={filter}
-                    value={data?.area}
-                    onChange={updateData}
+                    name="causaPedir"
+                    label="Causa de pedir"
+                    sheetName={hardcoded.listaCausasPedirSheet}
+                    rangeName={hardcoded.listaCausasPedirRange}
+                    value={data?.causaPedir ?? ""}
+                    onChange={newData => debounce(updateCausaPedir(newData, data?.sistema, updateData), 300)}
                 />
-                <Select
-                    name="tipoJustica"
-                    label="Tipo de justiça"
-                    optionsEndpoint={endPoints.tiposJustica}
-                    filter={filter}
-                    value={data?.tipoJustica}
-                    onChange={updateData}
-                />
-            </div>
-            <div className="form-group">
-                <Select
-                    name="vara"
-                    label="Vara"
-                    optionsEndpoint={endPoints.varas}
-                    filter={filter}
-                    value={data?.vara}
-                    onChange={updateData}
-                />
-                <Select
-                    name="tipoVara"
-                    label="Tipo de vara"
-                    optionsEndpoint={endPoints.tiposVara}
-                    filter={filter}
-                    value={data?.tipoVara}
-                    onChange={updateData}
-                />
-            </div>
-            <div className="form-group">
                 <Text
                     type="date"
                     name="dataCitacao"
                     label="Citação"
-                    value={data?.dataCitacao}
-                    placeholder="Data da citação do cliente"
+                    value={toBrDateString(data?.dataCitacao)}
+                    placeholder="Data da citação"
                     onChange={event => updateData(event.target.value, event.target.name)}
-                />
-                <Text
-                    type="date"
-                    name="dataRecebimento"
-                    label="Recebimento pelo escritório"
-                    value={data?.dataRecebimento}
-                    placeholder="Data de recebimento pelo escritório"
-                    onChange={event => updateData(event.target.value, event.target.name)}
-                />
-            </div>
-            <div className="form-group">
-                <Select
-                    name="fase"
-                    label="Fase"
-                    optionsEndpoint={endPoints.fases}
-                    filter={filter}
-                    value={data?.fase}
-                    onChange={updateData}
-                />
-            </div>
-            <div className="form-group">
-                <Select
-                    name="gruposDeTrabalho"
-                    label="Grupo de Trabalho"
-                    optionsEndpoint={endPoints.gruposTrabalho}
-                    filter={filter}
-                    value={data?.gruposDeTrabalho}
-                    onChange={updateData}
-                    allResponsaveis={data?.allResponsaveis}
-                />
-                <Select
-                    name="responsaveis"
-                    label="Responsável"
-                    optionsEndpoint={endPoints.responsaveis}
-                    filter={filter}
-                    value={data?.responsaveis}
-                    onChange={updateData}
-                    isMulti
                 />
             </div>
             <div className="form-group">
                 <Checkbox
-                    label="Segredo de justiça"
-                    name="segredoJustica"
-                    checked={data?.segredoJustica}
+                    label="Recomendar análise"
+                    name="recomendarAnalise"
+                    checked={data?.recomendarAnalise}
                     onChange={event => updateData(event.target.checked, event.target.name)}
                 />
                 <Text
                     type="text"
-                    name="senhaProcesso"
-                    label="Senha de acesso"
-                    value={data?.senhaProcesso}
-                    placeholder="Senha para segredo de justiça"
+                    name="obsParaAdvogado"
+                    label="Observações"
+                    value={data?.obsParaAdvogado}
+                    placeholder="Observações"
                     onChange={event => updateData(event.target.value, event.target.name)}
                 />
             </div>
             <div className="form-group">
-                <Textarea
-                    name="descricao"
-                    label="Resumo do caso"
-                    placeholder="Resumo do processo"
-                    onChange={event => updateData(event.target.value, event.target.name)}
+                <Select
+                    name="advogado"
+                    label="Advogado responsável"
+                    sheetName={hardcoded.listaAdvogadosSheet}
+                    rangeName={hardcoded.listaAdvogadosRange}
+                    value={data?.advogado ?? ""}
+                    onChange={updateData}
+                />
+            </div>
+            <div className="form-group">
+                <Select
+                    name="rito"
+                    label="Rito"
+                    sheetName={hardcoded.listaRitosSheet}
+                    rangeName={hardcoded.listaRitosRange}
+                    value={data?.rito}
+                    onChange={updateData}
+                />
+                <Select
+                    name="tipoAcao"
+                    label="Tipo de ação"
+                    sheetName={hardcoded.listaTiposAcaoSheet}
+                    rangeName={hardcoded.listaTiposAcaoRange}
+
+                    value={data?.tipoAcao}
+                    onChange={updateData}
                 />
             </div>
             <fieldset className="form-group">

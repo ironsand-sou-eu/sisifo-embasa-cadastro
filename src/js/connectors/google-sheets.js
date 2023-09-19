@@ -1,12 +1,14 @@
 import generateErrMsg from "../exceptions/error-message-generator"
+import compareWithOperator from "../utils/utils"
 import { gSheetsUrls } from "../envVars"
+import hardcoded from "../hardcodedValues"
 
-async function fetchGoogleToken() {
+export default async function fetchGoogleToken() {
     const tokenObj = await chrome.identity.getAuthToken({interactive: true})
     return tokenObj.token
 }
 
-async function fetchGoogleSheetRowsMatchingExpression(sheetName, expressionToSearch, token, getMany) {
+export async function fetchGoogleSheetRowsMatchingExpression(sheetName, expressionToSearch, token, getMany) {
     if (!token) token = await fetchGoogleToken()
     const promise = fetchGoogleSheetData(sheetName, token)
     const values = await extractValuesFromSheetsPromise(promise)
@@ -18,23 +20,34 @@ async function fetchGoogleSheetRowsMatchingExpression(sheetName, expressionToSea
     return getMatchingEntry(values, expressionToSearch, errorParams, getMany)
 }
 
-async function extractValuesFromSheetsPromise(promise) {
+export async function extractValuesFromSheetsPromise(promise) {
     const response = await promise
     const json = await response.json()
     return json?.values
 }
 
-function fetchGoogleSheetData(sheetName, token) {
-    const sheetIdString = sheetName + "SheetId"
+export async function fetchGoogleSheetData(
+    sheetName, token = null, workbookCodename = "configSheetId", range = null, readByColumns = false
+) {
+    if (!token) token = await fetchGoogleToken()
+    if (!workbookCodename) workbookCodename = "configSheetId"
     const sheetInfo = {
-        spreadsheetId: gSheetsUrls[sheetIdString],
-        name: sheetName
+        spreadsheetId: gSheetsUrls[workbookCodename],
+        name: sheetName,
+        range,
+        readByColumns
     }
     return requestGoogleSheetContents(sheetInfo, token)
 }
 
 function requestGoogleSheetContents(sheetInfo, token) {
-    const uri = gSheetsUrls.apiBase + sheetInfo.spreadsheetId + "/values/" + sheetInfo.name
+    const apiBaseUrl = gSheetsUrls.apiBase
+    const workbookId = sheetInfo.spreadsheetId
+    const sheetName = sheetInfo.name
+    const range = sheetInfo.range ? `!${sheetInfo.range}` : ""
+    const queryString = sheetInfo.readByColumns ? `?majorDimension=COLUMNS` : ""
+    const uri = `${apiBaseUrl}${workbookId}/values/${sheetName}${range}${queryString}`
+    if (sheetName === "pedidos") console.log(uri)
     const params = {
         method: 'GET',
         async: true,
@@ -47,7 +60,7 @@ function requestGoogleSheetContents(sheetInfo, token) {
     return fetch(uri, params)
 }
 
-function getMatchingEntry(dictionaryArray, nameToFind, errorParams, getMany = false) {
+export function getMatchingEntry(dictionaryArray, nameToFind, errorParams, getMany = false) {
     const { errorKind, missingEntry, entryType } = errorParams
     const resultArray = dictionaryArray.filter(pairItem => pairItem[0].toLowerCase() === nameToFind.toLowerCase())
     if (resultArray.length >= 1) {
@@ -60,6 +73,32 @@ function getMatchingEntry(dictionaryArray, nameToFind, errorParams, getMany = fa
     }
 }
 
-export default fetchGoogleToken
-export { fetchGoogleSheetRowsMatchingExpression, fetchGoogleSheetData,
-    extractValuesFromSheetsPromise, getMatchingEntry, gSheetsUrls }
+export async function loadOptionsInSheetRange (sheetName, rangeName, filterObject = undefined, shallMap = true, readByColumns = false) {
+    const response = await fetchGoogleSheetData(sheetName, null, null, rangeName, readByColumns)
+    const responseJson = await response.json()
+    if (sheetName === "pedidos") console.log(responseJson)
+    let filteredOptions
+    if (rangeName) filteredOptions = responseJson.values[0]
+    else filteredOptions = responseJson.values
+    
+    if (filterObject) {
+        filteredOptions = filteredOptions
+            .filter(option => {
+                return compareWithOperator(Array.isArray(option) ? option[0] : option, filterObject.operator, filterObject.val)
+            })
+    }
+    if (shallMap) {
+        return filteredOptions
+            .map(option => {
+                return {
+                    ...option,
+                    value: option,
+                    label: option
+                }
+            })
+    } else {
+        return filteredOptions
+    }
+}
+
+export { gSheetsUrls }

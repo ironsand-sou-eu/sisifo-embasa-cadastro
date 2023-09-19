@@ -1,7 +1,7 @@
 import ProcessoDataStructure from "../data-structures/ProcessoDataStructure"
 import UnidadeJurisdicionalDataStructure from "../data-structures/UnidadeJurisdicionalDataStructure"
 import NotProcessoHomepageException from "../exceptions/NotProcessoHomepageException"
-import { tiposParte } from "../enums"
+import { sistemas, tiposParte } from "../enums"
 import Pje1gTjbaAndamentosScrapper from "./Pje1gTjbaAndamentosScrapper"
 import Pje1gTjbaParteScrapper from "./Pje1gTjbaPartesScrapper"
 import { REGEX_CNJ_NUMBER } from "../utils/utils"
@@ -47,7 +47,7 @@ static #loadPageCheckpoints() {
 static async #ScrappeProcessoInfo() {
     this.#andamentos = await this.#getAndamentos()
     return new ProcessoDataStructure(
-        this.#getNumero(), "pje1gTjba", this.#getNumeroRegional(), this.#getUrl(), this.#getDataDistribuicao(),
+        this.#getNumero(), sistemas.pje1gTjba, this.#getNumeroRegional(), this.#getUrl(), this.#getDataDistribuicao(),
         this.#getValorDaCausa(), this.#getTipoDeAcao(), this.#getCausaDePedir(),
         this.#getSegredoJustica(), this.#getJuizo(), this.#getJuizAtual(),
         this.#getNumeroProcessoPrincipal(), this.#getNumerosIncidentes(),

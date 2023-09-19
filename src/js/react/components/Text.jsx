@@ -2,7 +2,7 @@ import React from "react"
 
 function Text(props) {
     return (
-        <div className="col-sm-6">
+        <div className={`col-sm-${props.colWidth ?? 6}`}>
             <label className="sisifo-label">{props.label}</label>
             <div className="col-sm-12 inputGroupContainer">
                 <input name={props.name}

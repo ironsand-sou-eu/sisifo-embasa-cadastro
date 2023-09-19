@@ -4,7 +4,8 @@ import Messenger from "./components/Messenger.jsx"
 import PopupForm from "./components/PopupForm.jsx"
 import finalizeProcessoInfo from "../adapters/confirmation-projuris.js"
 import useMsgSetter from "./hooks/useMsgSetter.jsx"
-import { debounce } from "../utils/utils"
+import useLoadingHandler from "./hooks/useLoadingHandler.jsx"
+import useErrorHandler from "./hooks/useErrorHandler.jsx"
 
 const LoadingContext = createContext();
 const MsgSetterContext = createContext();    
@@ -13,8 +14,11 @@ function App() {
     const [result, setResult] = useState({ success: [], processing: [], fail: [] });
     const { msgSetter } = useMsgSetter(result, setResult);
     const [formData, setFormData] = useState()
-    const [processoSajData, setProcessoSajData] = useState(null)
+    const [processoEspaiderData, setProcessoEspaiderData] = useState(null)
     const [loading, setLoading] = useState({ scrapping: true, creating: false })
+
+    useLoadingHandler(processoEspaiderData, setProcessoEspaiderData)
+    const { adaptedInfoHasErrors } = useErrorHandler(processoEspaiderData)
 
     function updateFormData(newData, changedInput) {
         setFormData(prevData => {
@@ -25,67 +29,36 @@ function App() {
     function onSubmit(e) {
         e.preventDefault()
         setLoading({ scrapping: false, creating: true })
-        finalizeProcessoInfo(processoSajData, formData, msgSetter)
+        finalizeProcessoInfo(processoEspaiderData, formData, msgSetter)
     }
-
-    function handleAdaptedInfoErrors() {
-        if (!adaptedInfoHasErrors()) return
-        processoSajData.errorMsgs.forEach(errorMsg => {msgSetter.addMsg({
-            type: "fail",
-            msg: errorMsg
-        })})
-        return true
-    }
-
-    function adaptedInfoHasErrors() {
-        if (processoSajData?.hasErrors) return true
-        else return false
-    }
-
-    useEffect(
-        () => {
-            if (adaptedInfoHasErrors()) handleAdaptedInfoErrors()
-        },
-        [processoSajData]
-    )
-
-    useEffect(debounce(() => {
-        if (processoSajData !== null) return
-        chrome.runtime.sendMessage({
-                from: "sisifoPopup",
-                subject: "query-processo-info-to-show"
-            },
-            response => {
-                setProcessoSajData(response)
-            }
-        )
-    }, [processoSajData]))
 
     useEffect(() => {
-        if (processoSajData === null) return
+        if (processoEspaiderData === null) return
         setLoading({ scrapping: false, creating: false })
         if (adaptedInfoHasErrors()) return
         const data = {
-            numeroProcesso: processoSajData.sajProcesso.processoNumeroWs[0].numeroDoProcesso,
-            assuntoCnj: processoSajData.sajProcesso.assuntoCnj,
-            assunto: null,
-            area: processoSajData.sajProcesso.area,
-            tipoJustica: processoSajData.sajProcesso.tipoJustica,
-            vara: processoSajData.sajProcesso.vara,
-            tipoVara: processoSajData.sajProcesso.tipoVara,
-            dataCitacao: new Date().toISOString().substring(0, 10),
-            dataRecebimento: new Date().toISOString().substring(0, 10),
-            fase: processoSajData.sajProcesso.fase,
-            allResponsaveis: processoSajData.responsaveisList,
-            gruposDeTrabalho: processoSajData.sajProcesso.gruposDeTrabalho,
-            responsaveis: processoSajData.sajProcesso.responsaveis,
-            segredoJustica: processoSajData.sajProcesso.segredoJustica,
-            partesRequerentes: processoSajData.sajPartes.partesRequerentes,
-            partesRequeridas: processoSajData.sajPartes.partesRequeridas,
-            pedidos: processoSajData.sajPedidos
+            numeroProcesso: processoEspaiderData.espaiderProcesso.numeroProcesso,
+            matricula: "",
+            codLocalidade: "",
+            partesRequerentes: processoEspaiderData.espaiderPartes.partesRequerentes,
+            partesRequeridas: processoEspaiderData.espaiderPartes.partesRequeridas,
+            nomeAndamento: Array.isArray(processoEspaiderData.espaiderAndamentos) && processoEspaiderData.espaiderAndamentos[0].nome,
+            dataAndamento: Array.isArray(processoEspaiderData.espaiderAndamentos) && processoEspaiderData.espaiderAndamentos[0].data,
+            causaPedir: processoEspaiderData.espaiderProcesso.causaPedir,
+            dataCitacao: processoEspaiderData.espaiderProcesso.dataCitacao,
+            recomendarAnalise: false,
+            obsParaAdvogado: "",
+            advogado: processoEspaiderData.espaiderProcesso.advogadoNucleo,
+            rito: processoEspaiderData.espaiderProcesso.rito,
+            tipoAcao: processoEspaiderData.espaiderProcesso.tipoAcao,
+            pedidos: processoEspaiderData.espaiderPedidos,
+            natureza: processoEspaiderData.espaiderProcesso.natureza,
+            gerencia: processoEspaiderData.espaiderProcesso.gerencia,
+            sistema: processoEspaiderData.espaiderProcesso.sistema
         }
+        console.log({data})
         setFormData(data)
-    }, [processoSajData])
+    }, [processoEspaiderData])
 
     return (
         <LoadingContext.Provider value={loading}>

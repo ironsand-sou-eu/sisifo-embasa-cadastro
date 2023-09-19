@@ -1,6 +1,5 @@
 import { fetchGoogleSheetRowsMatchingExpression } from "../connectors/google-sheets"
-import createAll from "../creators/projuris"
-import SajTarefaDataStructure from "../data-structures/SajTarefaDataStructure"
+import EspaiderProvidenciaDataStructure from "../data-structures/EspaiderProvidenciaDataStructure"
 import Exception from "../exceptions/Exception"
 import generateErrMsg from "../exceptions/error-message-generator"
 import Drafter from "./drafter"
@@ -29,8 +28,8 @@ async function finalizeProcessoInfo(sajEverything, confirmedInfo, resultSetter) 
     finalAdaptPartes(sajPartesMerged)
     finalAdaptAndamentos(sajAndamentosMerged, sajProcessoMerged.responsaveis)
     
-    // console.log({ sajProcesso: sajProcessoMerged, sajPartes: sajPartesMerged, sajTarefas: sajTarefasMerged, sajAndamentos: sajAndamentosMerged, sajPedidos: sajPedidosMerged }, msgSetter)
-    createAll({ sajProcesso: sajProcessoMerged, sajPartes: sajPartesMerged, sajTarefas: sajTarefasMerged, sajAndamentos: sajAndamentosMerged, sajPedidos: sajPedidosMerged }, msgSetter)
+    console.log({ sajProcesso: sajProcessoMerged, sajPartes: sajPartesMerged, sajTarefas: sajTarefasMerged, sajAndamentos: sajAndamentosMerged, sajPedidos: sajPedidosMerged }, msgSetter)
+    // createAll({ sajProcesso: sajProcessoMerged, sajPartes: sajPartesMerged, sajTarefas: sajTarefasMerged, sajAndamentos: sajAndamentosMerged, sajPedidos: sajPedidosMerged }, msgSetter)
 }
 
 function identifyClientsPolo(sajPartes) {
@@ -138,7 +137,7 @@ function adaptGoogleInfoTarefaToProjuris (tarefaGoogleInfo, sajTarefas, tarefasP
         teamsResponsible, prazoPrevistoString, prazoFatalString ] = tarefaGoogleInfo
     if (!dataAudiencia &&
         (prazoPrevistoString.toLowerCase().includes("aud") || prazoFatalString.toLowerCase().includes("aud"))) return
-    const sajTarefa = new SajTarefaDataStructure()
+    const sajTarefa = new EspaiderProvidenciaDataStructure()
     const tipoTarefa = tiposTarefa
         .filter(tipoTarefa => tipoTarefa.nomeTipoTarefa.toLowerCase() === nomeTarefa.toLowerCase())
     if (Array.isArray(tipoTarefa) && tipoTarefa.length === 0) {

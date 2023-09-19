@@ -1,4 +1,9 @@
-const tiposParte = Object.freeze({
+export const tiposParteEspaider = Object.freeze({
+    pessoaFisica: 1,
+    pessoaJuridica: 2
+})
+
+export const tiposParte = Object.freeze({
     requerente: 'autor',
     requerido: 'réu',
     testemunha: 'testemunha',
@@ -11,37 +16,45 @@ const tiposParte = Object.freeze({
     servidor: 'servidor'
 })
 
-const sajTipoEnvolvidoType = Object.freeze({
-    requerente: 'PARTE_ATIVA',
-    requerido: 'PARTE_PASSIVA',
-    terceiro: 'TERCEIRO',
-    assistente: 'ASSISTENTE',
-    fiscal: 'FISCAL',
-    testemunha: 'TESTEMUNHA',
-    vitima: 'VITIMA',
-    outros: 'OUTROS',
-    advogado: 'OUTROS',
-    juiz: 'OUTROS',
-    perito: 'OUTROS',
-    administrador: 'OUTROS',
-    servidor: 'OUTROS'
+export const condicoesParte = Object.freeze({
+    autor: "Autor",
+    reu: "Réu"
+})
+
+export const tiposContingencia = [
+    { value: "Provável", label: "Provável" },
+    { value: "Possível", label: "Possível" },
+    { value: "Remoto", label: "Remoto" }
+]
+
+export const sistemas = Object.freeze({
+    projudiTjba: "projudiTjba",
+    pje1gTjba: "pje1gTjba"
 
 })
 
-const tiposPedido = Object.freeze({
-    danoMoral: 'Indenização por danos morais',
-    danoMaterial: 'Indenizaçao por danos materiais',
-    cancelamentoContrato: 'Cancelamento de contrato',
-    desconstituicaoDebito: 'Desconstituição de débito',
-    restituicao: 'Restituição',
-    devolucaoEmDobro: 'Devolução em dobro',
-    parcelamento: 'Realização de parcelamento'
-})
+export const impedirNegativacaoMatricula = {
+    sim: "CLI_S",
+    nao: "CLI_N"
+}
 
-const tiposContingencia = Object.freeze({
-    provavel: 'Provável',
-    possivel: 'Possível',
-    remoto: 'Remoto'
-})
+export const impedirCobrancaMatricula = {
+    sim: 1,
+    nao: 2
+}
 
-export { tiposParte, tiposPedido, tiposContingencia, sajTipoEnvolvidoType }
+export const gerencias = {
+    ppjcm: "PPJCM",
+    ppjce: "PPJCE",
+    ppjct: "PPJCMT"
+}
+
+export const nomesEmbasa = [
+    "Embasa ",
+    "Empresa Baiana de Águas e Saneamento",
+    "Empresa Baiana de Água e Saneamento",
+    "Empresa Baiana de Aguas e Saneamento",
+    "Empresa Baiana de Agua e Saneamento",
+    "Representação Embasa",
+    "Representacao Embasa"
+]

@@ -1,31 +1,32 @@
 import React from "react"
 import Parte from "./Parte.jsx"
+import hardcoded from "../../hardcodedValues.js"
+import { nomesEmbasa } from "../../enums.js"
 
-function PartesColumn(props) {
-    if (!props.partes) return
+function PartesColumn({partes, label, type, onChange}) {
+    if (!partes) return
 
     function flagParteAsClient(personName, isClient) {
-        props.partes.forEach(element => {
+        partes.forEach(element => {
             if (element.nomePessoa === personName) element.flagCliente = isClient
         })
-        return props.partes
+        return partes
     }
     
     let i = 0
     return (
         <div className="col-sm-6">
-            <label className="col-sm-12 sisifo-v-label">{props.label}</label>
+            <label className="col-sm-12 sisifo-v-label">{label}</label>
             <div className="col-sm-12 inputGroupContainer">
-                {props.partes.map(parte => (
+                {partes.map(parte => (
                     <Parte
                         key={i++}
-                        type={props.type}
-                        isClient={parte.flagCliente}
-                        value={parte.nomePessoa}
-                        isLawyer={parte.profissao?.valor?.toLowerCase() === "advogado"}
+                        type={type}
+                        isClient={nomesEmbasa.some(nomeEmbasa => String(parte.nome).toLowerCase().includes(nomeEmbasa.toLowerCase()))}
+                        value={parte.nome}
                         onChange={event => {
-                            const newFlaggedPartes = flagParteAsClient(parte.nomePessoa, event.target.checked)
-                            props.onChange(newFlaggedPartes, {name: props.type})
+                            const newFlaggedPartes = flagParteAsClient(parte.nome, event.target.checked)
+                            onChange(newFlaggedPartes, {name: type})
                         }}
                     />
                 ))}

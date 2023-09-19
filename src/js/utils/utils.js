@@ -1,6 +1,6 @@
-const REGEX_CNJ_NUMBER = /(\d{7}-\d{2}.\d{4}.)(\d)(.\d{2}.\d{4})/
+export const REGEX_CNJ_NUMBER = /(\d{7}-\d{2}.\d{4}.)(\d)(.\d{2}.\d{4})/
 
-function compareWithOperator(a, operator, b) {
+export default function compareWithOperator(a, operator, b) {
     if (a === undefined || b === undefined) return false
     switch (operator) {
     case "sensitiveStrictEquality":
@@ -14,7 +14,7 @@ function compareWithOperator(a, operator, b) {
     }
 }
 
-function debounce(cb, delay = 250) {
+export function debounce(cb, delay = 250) {
     let timeOut
     return (...args) => {
         clearTimeout(timeOut)
@@ -24,5 +24,18 @@ function debounce(cb, delay = 250) {
     }
 }
 
-export default compareWithOperator
-export { debounce, REGEX_CNJ_NUMBER }
+export function toBrDateString(date, outputHours = false) {
+    if (!date) return null
+    const dateObj = new Date(date)
+    const dateCompensatingTimezone = new Date(dateObj.getTime() - (3 * 60 * 60 * 1000))
+    const year = dateCompensatingTimezone.getUTCFullYear()
+    const month = String(dateCompensatingTimezone.getUTCMonth()).padStart(2, "0")
+    const day = String(dateCompensatingTimezone.getUTCDate()).padStart(2, "0")
+    let finalStr = `${year}-${month}-${day}`
+    if (outputHours) {
+        const hour = String(dateCompensatingTimezone.getUTCHours()).padStart(2, "0")
+        const minute = String(dateCompensatingTimezone.getUTCMinutes()).padStart(2, "0")
+        finalStr += `T${hour}:${minute}`
+    }
+    return finalStr
+}

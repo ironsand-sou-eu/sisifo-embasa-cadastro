@@ -9,9 +9,9 @@
     "action": {
         "default_icon": {
             "16": "images/embasa-ico-16.ico",
-            "32": "images/sisifo-ico-32.png",
-            "192": "images/sisifo-ico-192.png",
-            "256": "images/sisifo-ico-256.png"
+            "32": "images/embasa-ico-16.ico",
+            "192": "images/embasa-ico-16.ico",
+            "256": "images/embasa-ico-16.ico"
         },
         "default_title": "Sísifo Embasa - Cadastro",
         "default_popup": "popup.html"
@@ -24,9 +24,9 @@
     
     "icons": {
         "16": "images/embasa-ico-16.ico",
-        "32": "images/sisifo-ico-32.png",
-        "192": "images/sisifo-ico-192.png",
-        "256": "images/sisifo-ico-256.png"
+        "32": "images/embasa-ico-16.ico",
+        "192": "images/embasa-ico-16.ico",
+        "256": "images/embasa-ico-16.ico"
     },
     
     "permissions": [
@@ -61,10 +61,10 @@
 
     }],
 
-    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAq1y5dieWFWONoNQnfyhGJWvh4dXJJ6MYQ7w13yYR/KyzvCSBJ+Ue0i8UfNREBmEmRjdRkr83uM/utS4OZuFNWNRna35gYlQ4+TpXL9SYb5b38CzIIxnGk9k08Bmp/lAtsO+OYpA7V4R6yIkMcXfdRdkRAymPct8rGz0mOPM/nKHtTBn3XXO2XpdXEC/2OZt3ZmAZq0ZsPxuZSScXUhsYFH+tNuAaThebCewWwEB0pIOGE29el1qxwDZP8IwnaGtSeWQxA7YCWfWEh090sHANOoGDAL14QBT3NgVhdn7iZt9Kt0Z643hnDi+Xk0WyzzHJc5YVYmEjuhpIFSJZPxrl6QIDAQAB",
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgZCrMKxeloqHZpXIyOpewGstq/YTcav2ag3DRB7rwtph1I1kAiFTOHmKyBySrFDwFmOgECMByV1mIQRewX0BVKpjM3Z35zjwr1HHwAIskAIXFgwTCbHGH0OhcT4LFVvlqOozD6nPbEeMnRVaO0wPaeDHoXOTWPjqfeCX21HMsoBeVyYcYv/YCTJEqv1ImPi8qnekgtRpGV2+XOgIduR0bKIQGNo8n2yYxhidWWvJJp3C5UCUw739k2E3mrQRf7I/TE5tJvSp0p1+jxFWtOUuP/0ecg6MtPeIj2u7J3Wq/92nljxPZfDkoXOkxMDrYvWpexoT6yput3t/KWAFNStT1wIDAQAB",
 
     "oauth2": {
-        "client_id": "835592926858-mr1u32jkduds271bh9jppumuqh99ekol.apps.googleusercontent.com",
+        "client_id": "98082471964-iorhk299dhghj0r6hk16koe4bt36bq87.apps.googleusercontent.com",
         "scopes": ["https://www.googleapis.com/auth/spreadsheets.readonly"]
     }
 }

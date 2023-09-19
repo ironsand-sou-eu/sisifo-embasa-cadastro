@@ -1,6 +1,6 @@
 import { generateValidationMsg } from "../../exceptions/error-message-generator";
 
-function useValidator(formData) {
+export default function useValidator(formData) {
     const warningMessages = [];
     if (!formData) return [ warningMessages ];
     const { assunto, gruposDeTrabalho, responsaveis, pastaCliente, partesRequerentes, partesRequeridas } = formData;
@@ -24,5 +24,3 @@ function useValidator(formData) {
     prependGeneralWarning();
     return [ warningMessages ];
 }
-
-export default useValidator;

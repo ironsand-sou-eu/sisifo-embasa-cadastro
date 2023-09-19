@@ -32,7 +32,6 @@ function PedidosBox(props) {
                 <label className="col-sm-2 sisifo-label centered">Valor</label>
                 <label className="col-sm-2 sisifo-label centered">Prognóstico</label>
                 <label className="col-sm-2 sisifo-label centered">R$ analisado</label>
-                <label className="col-sm-1 sisifo-label centered">%</label>
                 <label className="sisifo-label centered f-size"></label>
             </div>
             <div className="col-sm-12 inputGroupContainer">
