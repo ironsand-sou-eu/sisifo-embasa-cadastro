@@ -1,7 +1,6 @@
 import generateErrMsg from "../exceptions/error-message-generator"
 import compareWithOperator from "../utils/utils"
 import { gSheetsUrls } from "../envVars"
-import hardcoded from "../hardcodedValues"
 
 export default async function fetchGoogleToken() {
     const tokenObj = await chrome.identity.getAuthToken({interactive: true})
@@ -47,7 +46,6 @@ function requestGoogleSheetContents(sheetInfo, token) {
     const range = sheetInfo.range ? `!${sheetInfo.range}` : ""
     const queryString = sheetInfo.readByColumns ? `?majorDimension=COLUMNS` : ""
     const uri = `${apiBaseUrl}${workbookId}/values/${sheetName}${range}${queryString}`
-    if (sheetName === "pedidos") console.log(uri)
     const params = {
         method: 'GET',
         async: true,
@@ -76,7 +74,6 @@ export function getMatchingEntry(dictionaryArray, nameToFind, errorParams, getMa
 export async function loadOptionsInSheetRange (sheetName, rangeName, filterObject = undefined, shallMap = true, readByColumns = false) {
     const response = await fetchGoogleSheetData(sheetName, null, null, rangeName, readByColumns)
     const responseJson = await response.json()
-    if (sheetName === "pedidos") console.log(responseJson)
     let filteredOptions
     if (rangeName) filteredOptions = responseJson.values[0]
     else filteredOptions = responseJson.values

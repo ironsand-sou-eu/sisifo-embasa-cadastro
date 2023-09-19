@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import PartesColumn from "./PartesColumn.jsx";
 import Text from "./Text.jsx";
 import Select from "./Select.jsx";
