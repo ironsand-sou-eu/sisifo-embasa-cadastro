@@ -81,7 +81,10 @@ export async function loadOptionsInSheetRange (sheetName, rangeName, filterObjec
     if (filterObject) {
         filteredOptions = filteredOptions
             .filter(option => {
-                return compareWithOperator(Array.isArray(option) ? option[0] : option, filterObject.operator, filterObject.val)
+                const valuesToSearch = Array.isArray(filterObject.val) ? filterObject.val : [ filterObject.val ]
+                return valuesToSearch.some(value => {
+                    return compareWithOperator(Array.isArray(option) ? option[0] : option, filterObject.operator, value)
+                })
             })
     }
     if (shallMap) {

@@ -15,11 +15,7 @@ const hardcoded = {
 
     prazoProvidencia: 1,
     situacaoProvidencia: 3,
-    alertarProvidencia: false,
-    antecedenciaAlertaProvidencia: 1,
     periodicidadeAlertaProvidencia: 0,
-    gerarAndamentoProvidenciaContestar: true,
-    nomeAndamentoParaGerarNaProvidencia: "Contestação",
     codigoDatabaseAndamentoProvidencia: 20,
 
     riscoBaseadoEmPedido: 2,

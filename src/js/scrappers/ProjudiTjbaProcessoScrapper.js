@@ -149,7 +149,7 @@ static #getValorDaCausa() {
 
     let valorDaCausa = projudiValorDaCausaString.trim().replace(/(R\$ )|(\.)/g, '')
     valorDaCausa = valorDaCausa.replace(',', '.')
-    return valorDaCausa 
+    return Number(valorDaCausa)
 }
 
 static #getTipoDeAcao() {

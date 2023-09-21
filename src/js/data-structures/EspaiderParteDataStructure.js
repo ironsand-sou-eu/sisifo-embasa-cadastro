@@ -1,9 +1,9 @@
 class EspaiderParteDataStructure
 {
-    constructor(nome, cpfCnpj, semCpfCnpj = false, tipo, condicao, classe, nomeAdvogado, ehEmbasa = false)
+    constructor({ nome, cpfCnpj, tipo, condicao, classe, nomeAdvogado, semCpfCnpj = false })
     {
         Object.assign(this, {
-            nome, cpfCnpj, semCpfCnpj, tipo, condicao, classe, nomeAdvogado, ehEmbasa
+            nome, cpfCnpj, semCpfCnpj, tipo, condicao, classe, nomeAdvogado
         })
     }
 }

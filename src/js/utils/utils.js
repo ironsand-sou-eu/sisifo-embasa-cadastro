@@ -1,3 +1,5 @@
+import { nomesEmbasa } from "../enums"
+
 export const REGEX_CNJ_NUMBER = /(\d{7}-\d{2}.\d{4}.)(\d)(.\d{2}.\d{4})/
 
 export default function compareWithOperator(a, operator, b) {
@@ -11,6 +13,8 @@ export default function compareWithOperator(a, operator, b) {
         return a.toLowerCase().includes(b.toLowerCase())
     case "includes":
         return a.includes(b)
+    case "numericEquality":
+        return Number(a) === Number(b)
     }
 }
 
@@ -38,4 +42,12 @@ export function toBrDateString(date, outputHours = false) {
         finalStr += `T${hour}:${minute}`
     }
     return finalStr
+}
+
+export function isNumber(x) {
+    return parseFloat(x) == x
+}
+
+export function parteEhEmbasa(nome) {
+    return nomesEmbasa.some(nomeEmbasa => nome.toLowerCase().includes(nomeEmbasa.toLowerCase()))
 }

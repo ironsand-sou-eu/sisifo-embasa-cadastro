@@ -49,6 +49,41 @@ export const gerencias = {
     ppjct: "PPJCMT"
 }
 
+export const planilhaProvidenciasPorGerencia = {
+    ppjcm: "providenciasPPJCM",
+    ppjce: "providenciasPPJCE",
+    ppjct: "providenciasPPJCMT"
+}
+
+export const planilhaResponsaveisPorGerencia = {
+    ppjcm: {
+        advogados: "advsPorComarcaPPJCM",
+        prepostos: "prepostosPorUnidadeElPPJCM",
+    },
+    ppjce: {
+        advogados: "advsPorComarcaPPJCE",
+        prepostos: "prepostosPorUnidadeElPPJCE",
+    },
+    ppjct: {
+        
+    }
+}
+
+export const planilhaUnidadesELs = "unidadesELs"
+
+export const planilhaBloquearMatricula = "bloquearMatriculaPorComarca"
+
+export const planilhaObservacoes = {
+    ppjcm: "obsSubsidiosPPJCM",
+    ppjce: "obsSubsidiosPPJCE",
+    ppjct: "obsSubsidiosPPJCT"
+}
+
+export const responsavelType = {
+    advogado: "advogados",
+    preposto: "prepostos"
+}
+
 export const nomesEmbasa = [
     "Embasa ",
     "Empresa Baiana de Águas e Saneamento",
@@ -58,3 +93,4 @@ export const nomesEmbasa = [
     "Representação Embasa",
     "Representacao Embasa"
 ]
+

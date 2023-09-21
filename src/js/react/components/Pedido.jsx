@@ -38,14 +38,14 @@ function Pedido({ index, pedido, onChange }) {
                 newValue: formatStringToNumber(value)
         }))
     }
-    console.log("pedido", pedido)
+    
     return (
         <div className="input-group d-flex">
             <div className="col-sm-5 no-padding">
                 <AsyncSelect
                     loadOptions={filterFunction}
                     value={objectifyToSelect(pedido.nome)}
-                    name="pedido-name"
+                    name="nome"
                     placeholder="Selecione uma opção..."
                     onChange={newData => onChange(getUpdateParams(
                         {updatedField: "nome", newValue: deobjectifyFromSelect(newData, "value")}

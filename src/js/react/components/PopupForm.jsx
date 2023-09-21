@@ -12,7 +12,7 @@ import hardcoded from "../../hardcodedValues.js";
 
 function PopupForm({ onSubmit, data, updateData }) {
     const [ warningMessages ] = useValidator(data);
-    const { updateCausaPedir } = useUpdateCausaPedir();
+    const { updateCausaPedir } = useUpdateCausaPedir(data);
 
     return (
         <form className="form-horizontal" action="" method="post"
@@ -38,9 +38,9 @@ function PopupForm({ onSubmit, data, updateData }) {
                     />
                 <Text
                     type="text"
-                    name="codLocalidade"
+                    name="localidadeCode"
                     label="Localidade SCI"
-                    value={data?.codLocalidade}
+                    value={data?.localidadeCode}
                     placeholder="Código Localidade SCI"
                     onChange={event => updateData(event.target.value, event.target.name)}
                     colWidth="4"
@@ -85,7 +85,7 @@ function PopupForm({ onSubmit, data, updateData }) {
                     sheetName={hardcoded.listaCausasPedirSheet}
                     rangeName={hardcoded.listaCausasPedirRange}
                     value={data?.causaPedir ?? ""}
-                    onChange={newData => debounce(updateCausaPedir(newData, data?.sistema, updateData), 300)}
+                    onChange={newData => debounce(updateCausaPedir(newData, updateData), 300)}
                 />
                 <Text
                     type="date"

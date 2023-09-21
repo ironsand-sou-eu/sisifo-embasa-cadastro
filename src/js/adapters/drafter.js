@@ -1,10 +1,9 @@
 import { fetchGoogleSheetRowsMatchingExpression } from "../connectors/google-sheets"
 import EspaiderProcessoDataStructure from "../data-structures/EspaiderProcessoDataStructure"
-import EspaiderParteDataStructure from "../data-structures/EspaiderParteDataStructure"
-import EspaiderAndamentoDataStructure from "../data-structures/EspaiderAndamentoDataStructure"
 import generateErrMsg from "../exceptions/error-message-generator"
-import { nomesEmbasa, sistemas, tiposParte, tiposParteEspaider } from "../enums"
+import { sistemas, tiposParte, tiposParteEspaider } from "../enums"
 import hardcoded from "../hardcodedValues"
+import { parteEhEmbasa } from "../utils/utils"
 
 class Drafter {
     static #errorMsgFallback = "Ocorreu uma falha, vide mensagens de erro"
@@ -26,13 +25,6 @@ class Drafter {
         const espaiderPedidos = await this.#getAdaptedPedidos()
         const errors = Drafter.hasErrors([espaiderProcesso, espaiderAndamentos, espaiderPedidos])
         if (errors) return { hasErrors: true, errorMsgs: errors }
-        console.log({
-            espaiderProcesso,
-            espaiderPartes,
-            espaiderAndamentos: espaiderAndamentos.values,
-            espaiderPedidos: espaiderPedidos.values,
-            hasErrors: false
-        })
         return {
             espaiderProcesso,
             espaiderPartes,
@@ -92,7 +84,7 @@ class Drafter {
         const condicao = parte.tipoDeParte.charAt(0).toUpperCase() + parte.tipoDeParte.substring(1).toLowerCase()
         const classe = parte.tipoDeParte === tiposParte.requerente ? 2 : 1
         const nomeAdvogado = parte.advogados.length > 0 ? parte.advogados[0].nome : null
-        return new EspaiderParteDataStructure(nome, cpfCnpj, semCpfCnpj, tipo, condicao, classe, nomeAdvogado)
+        return { nome, cpfCnpj, semCpfCnpj, tipo, condicao, classe, nomeAdvogado }
     }
 
     #generateRandomCode() {
@@ -102,11 +94,7 @@ class Drafter {
     }
     
     #clienteIsInPolo(partes) {
-        return partes.some(parte => {
-            const parteEhEmbasa = nomesEmbasa.some(nomeEmbasa => parte.nome.toLowerCase().includes(nomeEmbasa.toLowerCase()))
-            if (parteEhEmbasa) return true
-            else return false
-        })
+        return partes.some(({nome}) => parteEhEmbasa(nome))
     }
     
     async #getAdaptedProcesso(espaiderPartes) {
@@ -123,17 +111,11 @@ class Drafter {
             return espaiderProcesso
         }
         const [ , juizo, comarca, orgao ] = googleJuizoInfo.value
-        // const causaDePedir
-        // const { gerencia, natureza }(causaDePedir)
-        // const { nucleoAdvogado, advogado } (strNumProc, causaDePedir, dtDataPrazo, bolAceitaCausaPedirSemResponsavel)
-        // const { nucleoPreposto, preposto } (strNumProc, causaDePedir, dtDataPrazo, bolAceitaCausaPedirSemResponsavel)
-        // const { unidade, divisao }(codLocalidadeSci)
-
-        return new EspaiderProcessoDataStructure(numeroProcesso, nomeAdverso, cpfCnpjAdverso, tipoAdverso, condicaoAdverso,
-            advogadoAdverso, valorCausa, null, hardcoded.classeProcesso, tipoAcao, null, orgao, juizo, comarca, rito,
-            hardcoded.fase, null, null, null, null, null, hardcoded.nomeDesdobramento, null, hardcoded.peticionamento,
-            hardcoded.nomeEmbasa, hardcoded.cnpjEmbasa, hardcoded.tipoEmpresaEmbasa, hardcoded.condicaoEmpresaEmbasa,
-            dataCitacao, null, sistema, [])
+        
+        return {
+            numeroProcesso, nomeAdverso, cpfCnpjAdverso, tipoAdverso, condicaoAdverso,
+            advogadoAdverso, valorCausa, tipoAcao, orgao, juizo, comarca, rito, dataCitacao, sistema
+        }
     }
 
     #getAdversoinfo(espaiderPartes) {
@@ -152,8 +134,8 @@ class Drafter {
             nomeAdverso: adversoPrincipal?.nome,
             cpfCnpjAdverso: adversoPrincipal?.cpfCnpj,
             tipoAdverso: adversoPrincipal?.tipo,
-            condicaoAdverso: adversoPrincipal?.nomeAdvogado,
-            advogadoAdverso: adversoPrincipal?.condicaoAdverso
+            condicaoAdverso: adversoPrincipal?.condicao,
+            advogadoAdverso: adversoPrincipal?.nomeAdvogado
         }
     }
 
@@ -175,8 +157,12 @@ class Drafter {
     #adaptCitacaoToEspaider(espaiderProcesso) {
         const obs = ""
         const data = espaiderProcesso.dataCitacao
-        return new EspaiderAndamentoDataStructure(hardcoded.nomeAndamentoCitacao, obs, data, null,
-            this.#processoInfo.numero, this.#processoInfo.numero)
+        return {
+            obs, data,
+            nome: hardcoded.nomeAndamentoCitacao,
+            numeroDoProcesso: this.#processoInfo.numero,
+            numeroDoDesdobramento: this.#processoInfo.numero
+        }
     }
     
     #adaptAudienciaToEspaider(audienciaFutura) {
@@ -185,8 +171,13 @@ class Drafter {
         const cabecalhoObs = `Ev./ID ${audienciaFutura.id} - ${audienciaFutura.nomeOriginalSistemaJustica}. `
         const detalhe = audienciaFutura.observacao ? ` - ${audienciaFutura.observacao}` : ""
         const obs =  cabecalhoObs + detalhe
-        return new EspaiderAndamentoDataStructure(hardcoded.juizadosNomeAndamento, obs, data,
-            audienciaFutura.id, this.#processoInfo.numero, this.#processoInfo.numero)
+        return {
+            obs, data,
+            nome: hardcoded.juizadosNomeAndamento,
+            id: audienciaFutura.id,
+            numeroDoProcesso: this.#processoInfo.numero,
+            numeroDoDesdobramento: this.#processoInfo.numero
+        }
     }
     
     async #getAdaptedPedidos() {
