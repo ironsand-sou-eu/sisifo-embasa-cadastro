@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 
-export default function useErrorHandler(processoEspaiderData) {
+export default function useErrorHandler(processoEspaiderData, msgSetter) {
     function adaptedInfoHasErrors() {
         if (processoEspaiderData?.hasErrors) return true
         else return false
