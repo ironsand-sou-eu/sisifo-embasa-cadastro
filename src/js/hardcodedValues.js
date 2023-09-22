@@ -37,7 +37,7 @@ const hardcoded = {
     listaCausasPedirRange: "causasPedir",
     listaAdvogadosRange: "advogados",
     listaRitosRange: "ritos",
-    listaTiposAcaoRange: "tiposAcao",
+    listaTiposAcaoRange: "tiposAcao"
 }
 
 export default hardcoded

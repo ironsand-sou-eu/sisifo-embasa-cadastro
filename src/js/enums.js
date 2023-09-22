@@ -1,3 +1,11 @@
+export const operators = Object.freeze({
+    sensitiveStrictEquality: "sensitiveStrictEquality",
+    insensitiveStrictEquality: "insensitiveStrictEquality",
+    insentiviveIncludes: "insentiviveIncludes",
+    includes: "includes",
+    numericEquality: "numericEquality"
+})
+
 export const tiposParteEspaider = Object.freeze({
     pessoaFisica: 1,
     pessoaJuridica: 2

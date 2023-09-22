@@ -1,19 +1,19 @@
-import { nomesEmbasa } from "../enums"
+import { nomesEmbasa, operators } from "../enums"
 
 export const REGEX_CNJ_NUMBER = /(\d{7}-\d{2}.\d{4}.)(\d)(.\d{2}.\d{4})/
 
 export default function compareWithOperator(a, operator, b) {
     if (a === undefined || b === undefined) return false
     switch (operator) {
-    case "sensitiveStrictEquality":
+    case operators.sensitiveStrictEquality:
         return a === b
-    case "insensitiveStrictEquality":
+    case operators.insensitiveStrictEquality:
         return a.toString().toLowerCase() === b.toString().toLowerCase()
-    case "insentiviveIncludes":
+    case operators.insentiviveIncludes:
         return a.toLowerCase().includes(b.toLowerCase())
-    case "includes":
+    case operators.includes:
         return a.includes(b)
-    case "numericEquality":
+    case operators.numericEquality:
         return Number(a) === Number(b)
     }
 }
