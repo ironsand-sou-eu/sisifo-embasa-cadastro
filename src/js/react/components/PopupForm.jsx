@@ -1,14 +1,14 @@
 import React from "react";
-import PartesColumn from "./PartesColumn.jsx";
-import Text from "./Text.jsx";
-import Select from "./Select.jsx";
-import Checkbox from "./Checkbox.jsx";
-import PedidosBox from "./PedidosBox.jsx";
-import Button from "./Button.jsx";
-import useValidator from "../hooks/useValidator.jsx";
-import useUpdateCausaPedir from "../hooks/useUpdateCausaPedir.jsx";
-import { debounce, toBrDateString } from "../../utils/utils.js";
-import hardcoded from "../../hardcodedValues.js";
+import PartesColumn from "./PartesColumn";
+import Text from "./Text";
+import Select from "./Select";
+import Checkbox from "./Checkbox";
+import PedidosBox from "./PedidosBox";
+import Button from "./Button";
+import useValidator from "../hooks/useValidator";
+import useUpdateCausaPedir from "../hooks/useUpdateCausaPedir";
+import { debounce, toBrDateString } from "../../utils/utils";
+import hardcoded from "../../hardcodedValues";
 
 function PopupForm({ onSubmit, data, updateData }) {
     const [ warningMessages ] = useValidator(data);

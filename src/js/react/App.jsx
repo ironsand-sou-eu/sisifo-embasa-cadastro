@@ -1,11 +1,11 @@
 import React, { useEffect, useState, createContext } from "react"
-import Header from "./components/Header.jsx"
-import Messenger from "./components/Messenger.jsx"
-import PopupForm from "./components/PopupForm.jsx"
-import useMsgSetter from "./hooks/useMsgSetter.jsx"
-import useLoadingHandler from "./hooks/useLoadingHandler.jsx"
-import useErrorHandler from "./hooks/useErrorHandler.jsx"
-import usePostConfirmationAdapter from "./hooks/usePostConfirmationAdapter.jsx"
+import Header from "./components/Header"
+import Messenger from "./components/Messenger"
+import PopupForm from "./components/PopupForm"
+import useMsgSetter from "./hooks/useMsgSetter"
+import useLoadingHandler from "./hooks/useLoadingHandler"
+import useErrorHandler from "./hooks/useErrorHandler"
+import usePostConfirmationAdapter from "./hooks/usePostConfirmationAdapter"
 
 const LoadingContext = createContext();
 const MsgSetterContext = createContext();    
@@ -19,7 +19,7 @@ function App() {
     const { finalizeProcessoInfo } = usePostConfirmationAdapter(scrappedData, formData, msgSetter)
 
     useLoadingHandler(scrappedData, setscrappedData)
-    const { adaptedInfoHasErrors } = useErrorHandler(scrappedData)
+    const { adaptedInfoHasErrors } = useErrorHandler(scrappedData, msgSetter)
 
     function updateFormData(newData, changedInput) {
         setFormData(prevData => {

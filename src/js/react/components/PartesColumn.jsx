@@ -1,7 +1,7 @@
 import React from "react"
-import Parte from "./Parte.jsx"
-import hardcoded from "../../hardcodedValues.js"
-import { nomesEmbasa } from "../../enums.js"
+import Parte from "./Parte"
+import hardcoded from "../../hardcodedValues"
+import { nomesEmbasa } from "../../enums"
 
 function PartesColumn({partes, label, type, onChange}) {
     if (!partes) return

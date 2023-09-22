@@ -1,14 +1,14 @@
 import React from "react"
-import Link from "./components/Link.jsx"
-import { gSheetsUrls } from "../envVars"
+import Link from "./components/Link"
+import { googleUrls } from "../envVars"
 
 function OptionsApp() {
-    const andamentosUrl = gSheetsUrls.frontendBase + gSheetsUrls.andamentosSheetId
-    const juizosUrl = gSheetsUrls.frontendBase + gSheetsUrls.juizosSheetId
-    const clientesUrl = gSheetsUrls.frontendBase + gSheetsUrls.clientesSheetId
-    const gtsUrl = gSheetsUrls.frontendBase + gSheetsUrls.gtsSheetId
-    const pedidosProvisionamentosUrl = gSheetsUrls.frontendBase + gSheetsUrls.pedidosProvisionamentosSheetId
-    const tarefasUrl = gSheetsUrls.frontendBase + gSheetsUrls.tarefasSheetId
+    const andamentosUrl = googleUrls.sheetsFrontendBase + googleUrls.andamentosSheetId
+    const juizosUrl = googleUrls.sheetsFrontendBase + googleUrls.juizosSheetId
+    const clientesUrl = googleUrls.sheetsFrontendBase + googleUrls.clientesSheetId
+    const gtsUrl = googleUrls.sheetsFrontendBase + googleUrls.gtsSheetId
+    const pedidosProvisionamentosUrl = googleUrls.sheetsFrontendBase + googleUrls.pedidosProvisionamentosSheetId
+    const tarefasUrl = googleUrls.sheetsFrontendBase + googleUrls.tarefasSheetId
     return (
         <div className="form-group">
             <Link
