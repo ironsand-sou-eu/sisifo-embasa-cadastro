@@ -1,15 +1,15 @@
-import { fetchGoogleSheetRowsMatchingExpression } from "../connectors/google-sheets"
 import EspaiderProcessoDataStructure from "../data-structures/EspaiderProcessoDataStructure"
 import generateErrMsg from "../exceptions/error-message-generator"
 import { sistemas, tiposParte, tiposParteEspaider } from "../enums"
 import hardcoded from "../hardcodedValues"
 import { parteEhEmbasa } from "../utils/utils"
+import { fetchGoogleSheetRowsMatchingExpression } from "../react/hooks/connectors/useGoogleSheets"
 
 class Drafter {
     static #errorMsgFallback = "Ocorreu uma falha, vide mensagens de erro"
     #processoInfo
     #googleToken
-    
+
     constructor(processoInfo, googleToken) {
         this.#processoInfo = processoInfo
         this.#googleToken = googleToken
@@ -160,8 +160,8 @@ class Drafter {
         return {
             obs, data,
             nome: hardcoded.nomeAndamentoCitacao,
-            numeroDoProcesso: this.#processoInfo.numero,
-            numeroDoDesdobramento: this.#processoInfo.numero
+            numeroProcesso: this.#processoInfo.numero,
+            numeroDesdobramento: this.#processoInfo.numero
         }
     }
     
@@ -175,75 +175,13 @@ class Drafter {
             obs, data,
             nome: hardcoded.juizadosNomeAndamento,
             id: audienciaFutura.id,
-            numeroDoProcesso: this.#processoInfo.numero,
-            numeroDoDesdobramento: this.#processoInfo.numero
+            numeroProcesso: this.#processoInfo.numero,
+            numeroDesdobramento: this.#processoInfo.numero
         }
     }
     
     async #getAdaptedPedidos() {
         return { values: [], errorMsgs: [] }
     }
-    
-    // async #getStandardPedidosByClientAndCausaPedir(clientName, dataDistribuicao, causasDePedir = []) {
-    //     const clientFilteredProvisionsList = await this.#getAllClientsProvisions(clientName)
-    //     const clientProvisionsByCausasDePedir = this.#filterClientsProvisionsByCausasDePedir(clientFilteredProvisionsList, causasDePedir)
-    //     return clientProvisionsByCausasDePedir.map(pedidoProvision => {
-    //         const sajPedido = new SajPedidoDataStructure()
-    //         sajPedido.nomePedido = pedidoProvision[2].trim()
-    //         sajPedido.dataPedido = dataDistribuicao
-    //         sajPedido.valorProvisionado = pedidoProvision[4]
-    //         sajPedido.estimativaTipo = pedidoProvision[3]
-    //         sajPedido.riscoPorcentagem = pedidoProvision[5]
-    //         return sajPedido
-    //     })
-    // }
-    
-    // async #fetchRelevantPedidosEspaiderData(pedidos) {
-    //     const promises = pedidos.map(pedido => fetchSajInfo(endPoints.pedidos + pedido.nomePedido))
-    //     const responses = await Promise.all(promises)
-    //     return await Promise.all(responses.map(async response => await extractOptionsArray(response)))
-    // }
-    
-    // #pushNomeAndCodigoIntoPedidos(sajPedidos, list) {
-    //     sajPedidos.values.forEach((pedido, index) => {
-    //         const relatedTypes = list[index]
-    //         if (relatedTypes === "no content") {
-    //             sajPedidos.errorMsgs.push(generateErrMsg.noMatchInSaj(pedido.nomePedido, "pedido"))
-    //             return
-    //         }
-    //         const type = relatedTypes.filter(type => type.valor === pedido.nomePedido)
-    //         pedido.codigoPedido = type[0].chave
-    //         pedido.nomePedido = type[0].valor
-    //     })
-    // }
-    
-    // async #getAllClientsProvisions(clientName) {
-    //     if (clientName === undefined) return []
-    //     const promises = await this.#makeSajPedidosFetches()
-    //     const responses = await Promise.all(promises)
-    //     const allClientsProvisionsList = await extractValuesFromSheetsPromise(responses[0])
-    //     const filter = {
-    //         key: 0,
-    //         operator: "insensitiveStrictEquality",
-    //         val: clientName
-    //     }
-    //     return "olá"
-    //     // return Drafter.#filterSajOptions(allClientsProvisionsList, filter)
-    // }
-    
-    // async #makeSajPedidosFetches() {
-    //     return [ fetchGoogleSheetData("pedidosProvisionamentos", this.#googleToken) ]
-    // }
-    
-    // #filterClientsProvisionsByCausasDePedir(provisionsList, causasDePedir) {
-    //     if (causasDePedir.length === 0) {
-    //         const fallbackValue = "geral"
-    //         return provisionsList
-    //             .filter(clientProvision => clientProvision[1].trim().toLowerCase() === fallbackValue)
-    //     } else {
-    //         return provisionsList
-    //             .filter(clientProvision => causasDePedir.includes(clientProvision[1]))
-    //     }
-    // }    
 }
 export default Drafter

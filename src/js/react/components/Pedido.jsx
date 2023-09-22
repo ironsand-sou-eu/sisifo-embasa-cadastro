@@ -1,16 +1,18 @@
 import React from "react"
 import Select from "react-select"
 import AsyncSelect from "react-select/async"
-import Trash from "./Trash.jsx"
-import { loadOptionsInSheetRange } from "../../connectors/google-sheets.js"
-import { tiposContingencia } from "../../enums.js"
-import useCurrencyFormater from "../hooks/useCurrencyFormater.jsx"
-import useSelectAdapter from "../hooks/useSelectAdapter.jsx"
+import Trash from "./Trash"
+import { tiposContingencia } from "../../enums"
+import useCurrencyFormater from "../hooks/useCurrencyFormater"
+import useSelectAdapter from "../hooks/useSelectAdapter"
+import { useGoogleSheets } from "../hooks/connectors/useGoogleSheets"
+
+const { loadSheetRange } = useGoogleSheets()
 
 function Pedido({ index, pedido, onChange }) {
     const { formatNumberToPtbrString, formatStringToNumber } = useCurrencyFormater()
     const { objectifyToSelect, deobjectifyFromSelect } = useSelectAdapter()
-    const filterFunction = input => loadOptionsInSheetRange("pedidos", "nomesPedidos", { operator: "insentiviveIncludes", val: input }, true, true)
+    const filterFunction = input => loadSheetRange("pedidos", "nomesPedidos", { operator: "insentiviveIncludes", val: input }, true, true)
 
     function getDeleteParams() {
         return {

@@ -1,14 +1,15 @@
 import React, { useContext } from "react"
 import AsyncSelect from "react-select/async"
-import { loadOptionsInSheetRange } from "../../connectors/google-sheets"
-import { LoadingContext } from "../App.jsx"
-import useSelectAdapter from "../hooks/useSelectAdapter.jsx"
+import { LoadingContext } from "../App"
+import useSelectAdapter from "../hooks/useSelectAdapter"
+import { useGoogleSheets } from "../hooks/connectors/useGoogleSheets"
 
 export default function Select({ sheetName, rangeName, name, label, value, isMulti, onChange }) {
     const isLoading = useContext(LoadingContext)
     const { objectifyToSelect, deobjectifyFromSelect } = useSelectAdapter()
-    
-    const filterFunction = input => loadOptionsInSheetRange(sheetName, rangeName, { operator: "insentiviveIncludes", val: input }, true, true)
+    const { loadSheetRange } = useGoogleSheets()
+
+    const filterFunction = input => loadSheetRange(sheetName, rangeName, { operator: "insentiviveIncludes", val: input }, true, true)
 
     async function changed(newData) {
         onChange(deobjectifyFromSelect(newData), name)

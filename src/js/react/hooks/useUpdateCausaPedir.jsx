@@ -1,9 +1,11 @@
-import { loadOptionsInSheetRange } from "../../connectors/google-sheets"
 import { gerencias, planilhaObservacoes, planilhaProvidenciasPorGerencia,
     planilhaResponsaveisPorGerencia, responsavelType, sistemas } from "../../enums"
 import hardcoded from "../../hardcodedValues"
+import { useGoogleSheets } from "./connectors/useGoogleSheets"
 
 export default function useUpdateCausaPedir(confirmedData) {
+    const { loadSheetRange } = useGoogleSheets()
+
     async function updateCausaPedir(causaPedir, setFormData) {
         if (!confirmedData) return
         const { natureza, gerencia } = await getNaturezaGerenciaByCausaPedir(causaPedir)
@@ -21,7 +23,7 @@ export default function useUpdateCausaPedir(confirmedData) {
     }
 
     async function getNaturezaGerenciaByCausaPedir(causaPedir) {
-        const foundValues = await loadOptionsInSheetRange(hardcoded.listaCausasPedirSheet,
+        const foundValues = await loadSheetRange(hardcoded.listaCausasPedirSheet,
             null, { operator: "insensitiveStrictEquality", val: causaPedir}, false, false)
         let [, natureza, gerencia] = foundValues.length > 0 ? foundValues[0] : [null, null, null]
         if (confirmedData.sistema === sistemas.projudiTjba) gerencia = gerencias.ppjcm
@@ -29,9 +31,9 @@ export default function useUpdateCausaPedir(confirmedData) {
     }
     
     async function getStandardPedidos(causaPedir) {
-        const foundEntries = await loadOptionsInSheetRange(hardcoded.causasDePedirPedidosSheet,
+        const foundEntries = await loadSheetRange(hardcoded.causasDePedirPedidosSheet,
             null, { operator: "insensitiveStrictEquality", val: causaPedir}, false, false)
-        const allPedidosCodesAndNames = await loadOptionsInSheetRange(hardcoded.pedidosSheet, null, null, false, false)
+        const allPedidosCodesAndNames = await loadSheetRange(hardcoded.pedidosSheet, null, null, false, false)
         return foundEntries.map(entry => {
             const [, pedidoCodName, estimativaTipo, valorProvisionado] = entry
             const [ nome, idComponent ] = getPedidosNameAndIdComponentByCode(pedidoCodName, allPedidosCodesAndNames)
@@ -45,7 +47,7 @@ export default function useUpdateCausaPedir(confirmedData) {
     }
 
     async function getProvidenciasParams(gerencia, causaPedir) {
-        const foundEntries = await loadOptionsInSheetRange(planilhaProvidenciasPorGerencia[String(gerencia).toLowerCase()],
+        const foundEntries = await loadSheetRange(planilhaProvidenciasPorGerencia[String(gerencia).toLowerCase()],
             null, { operator: "insensitiveStrictEquality", val: [confirmedData.comarca, "geral"]}, false, false)
         const values = await Promise.all(foundEntries.map(async sheetRow => {
             const [ , nomeProvidencia, tipoResponsavel, referencialDateType, daysFromReferencialDate, alertar,
@@ -53,8 +55,8 @@ export default function useUpdateCausaPedir(confirmedData) {
             const dataFinal = calculateDataFinal(referencialDateType, daysFromReferencialDate)
             const obs = await getObservacao(nomeProvidencia, causaPedir, gerencia)
             return {
-                numeroDoProcesso: confirmedData.numeroProcesso,
-                numeroDoDesdobramento: confirmedData.numeroProcesso,
+                numeroProcesso: confirmedData.numeroProcesso,
+                numeroDesdobramento: confirmedData.numeroProcesso,
                 nome: nomeProvidencia,
                 dataFinal, tipoResponsavel, referencialDateType,
                 daysFromReferencialDate, alertar, diasAntecedenciaAlerta,
@@ -92,7 +94,7 @@ export default function useUpdateCausaPedir(confirmedData) {
             ? `\nObs. do cadastro: ${confirmedData.obsParaAdvogado}`
             : ""
         const sheetName = planilhaObservacoes[String(gerencia).toLowerCase()]
-        const foundEntriesByGerencia = await loadOptionsInSheetRange(sheetName, null,
+        const foundEntriesByGerencia = await loadSheetRange(sheetName, null,
             { operator: "insentiviveIncludes", val: [causaPedir, "geral"]}, false, false)
         if (foundEntriesByGerencia.length > 0) obs += `\n\n${foundEntriesByGerencia[0][1]}`
         return obs
@@ -101,7 +103,7 @@ export default function useUpdateCausaPedir(confirmedData) {
     async function getNucleoResp(responsavelKind, gerencia, causaPedir, providenciaDate, unidade, el) {
         const sheet = planilhaResponsaveisPorGerencia[gerencia.toLowerCase()][responsavelKind]
         const searchParam = getSearchParam(responsavelKind, unidade, el)
-        const foundEntriesByGerencia = await loadOptionsInSheetRange(sheet, null,
+        const foundEntriesByGerencia = await loadSheetRange(sheet, null,
             { operator: "insensitiveStrictEquality", val: [ ...searchParam, "geral" ]}, false, false)
         if (foundEntriesByGerencia.length === 0) return null
         const matchingCausaPedirEntry = foundEntriesByGerencia.find(entry => {
@@ -128,7 +130,7 @@ export default function useUpdateCausaPedir(confirmedData) {
     async function getResponsavelInfo(responsavelString, date) {
         const dateStr = new Date(date).toLocaleDateString("pt-BR")
         if (!(responsavelString.startsWith("grpadv") || responsavelString.startsWith("grpprep")) ) return responsavelString
-        const foundRows = await loadOptionsInSheetRange(responsavelString, null,
+        const foundRows = await loadSheetRange(responsavelString, null,
             { operator: "insensitiveStrictEquality", val: ["responsáveis", "% de carga", "% do total de providências", "total", dateStr] },
             false, false)
         if (foundRows.length <= 4) return null

@@ -1,23 +1,27 @@
-import { loadOptionsInSheetRange } from "../../connectors/google-sheets"
 import EspaiderProvidenciaDataStructure from "../../data-structures/EspaiderProvidenciaDataStructure"
 import EspaiderProcessoDataStructure from "../../data-structures/EspaiderProcessoDataStructure"
 import EspaiderAndamentoDataStructure from "../../data-structures/EspaiderAndamentoDataStructure"
 import EspaiderParteDataStructure from "../../data-structures/EspaiderParteDataStructure"
 import EspaiderPedidoDataStructure from "../../data-structures/EspaiderPedidoDataStructure"
 import EspaiderMatriculaDataStructure from "../../data-structures/EspaiderMatriculaDataStructure"
-import { impedirCobrancaMatricula, impedirNegativacaoMatricula, planilhaBloquearMatricula, planilhaUnidadesELs, responsavelType } from "../../enums"
+import { impedirCobrancaMatricula, impedirNegativacaoMatricula, planilhaBloquearMatricula,
+    planilhaUnidadesELs, responsavelType } from "../../enums"
 import Exception from "../../exceptions/Exception"
 import generateErrMsg from "../../exceptions/error-message-generator"
 import hardcoded from "../../hardcodedValues"
-import useUpdateCausaPedir from "./useUpdateCausaPedir.jsx"
-import useIdGenerator from "./useIdGenerator.jsx"
+import useUpdateCausaPedir from "./useUpdateCausaPedir"
+import useIdGenerator from "./useIdGenerator"
 import Drafter from "../../adapters/drafter"
 import { isNumber, parteEhEmbasa } from "../../utils/utils"
+import { useGoogleSheets } from "./connectors/useGoogleSheets"
+import useExporter from "./creators/useExporter"
 
 export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, msgSetter) {
     const { getNucleoResp } = useUpdateCausaPedir(confirmedInfo)
     const { generateAndamentoId, generateProvidenciaId, generatePedidoId } = useIdGenerator()
-    
+    const { loadSheetRange } = useGoogleSheets()
+    const { createAll } = useExporter(msgSetter)
+
     async function finalizeProcessoInfo() {
         const { espaiderProcessoMerged, espaiderPartesMerged, espaiderAndamentosMerged, espaiderPedidosMerged,
             providenciasParams } = mergeConfirmedInfo(scrappedInfo, confirmedInfo)
@@ -33,8 +37,8 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
         
         // if (Drafter.hasErrors([espaiderProvidencias])) throw new Exception(espaiderProvidencias.errorMsgs, msgSetter)
         
-        console.log({ espaiderProcesso, espaiderMatricula, espaiderPartes, espaiderAndamentos, espaiderPedidos, espaiderProvidencias }, msgSetter)
-        // createAll({ espaiderProcesso, espaiderMatricula, espaiderPartes, espaiderAndamentos, espaiderPedidos, espaiderProvidencias }, msgSetter)
+        // console.log({ espaiderProcesso, espaiderMatricula, espaiderPartes, espaiderAndamentos, espaiderPedidos, espaiderProvidencias }, msgSetter)
+        createAll({ espaiderProcesso, espaiderMatricula, espaiderPartes, espaiderAndamentos, espaiderPedidos, espaiderProvidencias })
     }
 
     function mergeConfirmedInfo(scrappedInfo, confirmedInfo) {
@@ -96,29 +100,29 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
     async function getUnidadeDivisaoFromLocalidadeCode() {
         const sheetName = planilhaUnidadesELs
         const operator = isNumber(confirmedInfo.localidadeCode) ? "numericEquality" : "insensitiveStrictEquality"
-        const foundEntries = await loadOptionsInSheetRange(sheetName, null,
+        const foundEntries = await loadSheetRange(sheetName, null,
             { operator, val: confirmedInfo.localidadeCode}, false, false)
         if (foundEntries < 1) return null
         const [ , , unidade, , divisao ] = foundEntries[0]
         return { unidade, divisao }
     }
 
-    function finalAdaptAndamentos(espaiderAndamentos, numeroDoProcesso) {
+    function finalAdaptAndamentos(espaiderAndamentos, numeroProcesso) {
         return espaiderAndamentos.map(andamento => {
             const nome = andamento.nome
             const obs = andamento.obs
             const data = new Date(andamento.data)
-            const id = generateAndamentoId(numeroDoProcesso, andamento.id)
-            const numeroDoDesdobramento = numeroDoProcesso
-            return new EspaiderAndamentoDataStructure({ nome, obs, data, id, numeroDoProcesso, numeroDoDesdobramento })
+            const id = generateAndamentoId(numeroProcesso, andamento.id)
+            const numeroDesdobramento = numeroProcesso
+            return new EspaiderAndamentoDataStructure({ nome, obs, data, id, numeroProcesso, numeroDesdobramento })
         })
     }
 
     async function finalAdaptProvidencias(providenciasParams, nucleo, advogado, preposto, idAndamento) {
         return providenciasParams.map((providParamsValues, index) => {
             const responsavel = providParamsValues.tipoResponsavel === "advogado" ? advogado : preposto
-            const numeroDoProcesso = providParamsValues.numeroDoProcesso
-            const numeroDoDesdobramento = providParamsValues.numeroDoDesdobramento
+            const numeroProcesso = providParamsValues.numeroProcesso
+            const numeroDesdobramento = providParamsValues.numeroDesdobramento
             const nome = providParamsValues.nome
             const dataFinal = new Date(providParamsValues.dataFinal)
             const alertar = providParamsValues.alertar
@@ -126,10 +130,10 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
             const gerarAndamento = providParamsValues.gerarAndamento
             const nomeAndamentoParaGerar = providParamsValues.nomeAndamentoParaGerar
             const obs = providParamsValues.obs
-            const id = generateProvidenciaId(numeroDoProcesso, dataFinal, index)
+            const id = generateProvidenciaId(numeroProcesso, dataFinal, index)
             return new EspaiderProvidenciaDataStructure({
                 id, idAndamento, nome, dataFinal, alertar, diasAntecedenciaAlerta, nucleo, responsavel,
-                obs, gerarAndamento, numeroDoProcesso, numeroDoDesdobramento, nomeAndamentoParaGerar
+                obs, gerarAndamento, numeroProcesso, numeroDesdobramento, nomeAndamentoParaGerar
             })
         })
     }
@@ -157,9 +161,9 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
         return partes.filter(({nome}) => !parteEhEmbasa(nome))
     }
 
-    function finalAdaptPedidos(espaiderPedidos, numeroDoProcesso, dataCitacao) {
+    function finalAdaptPedidos(espaiderPedidos, numeroProcesso, dataCitacao) {
         return espaiderPedidos.map(pedido => {
-            const id = generatePedidoId(numeroDoProcesso, pedido.idComponent)
+            const id = generatePedidoId(numeroProcesso, pedido.idComponent)
             const nome = pedido.nome
             const valor = pedido.valorPedido
             const databaseAtualizacao = dataCitacao
@@ -168,13 +172,13 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
             const valorRiscoOriginal = pedido.valorProvisionado
             const estimativaPagamento = new Date(dataCitacao.getTime() + 365 * 24 * 60 * 60 * 1000)
             return new EspaiderPedidoDataStructure({
-                id, numeroDoProcesso, nome, valor, databaseAtualizacao, databaseJuros,
+                id, numeroProcesso, nome, valor, databaseAtualizacao, databaseJuros,
                 riscoOriginal, valorRiscoOriginal, estimativaPagamento
             })
         })
     }
 
-    async function adaptMatricula(matricula, numeroDoProcesso, comarca, gerencia) {
+    async function adaptMatricula(matricula, numeroProcesso, comarca, gerencia) {
         const bloqueioParams = {
             sim: { negativacao: impedirNegativacaoMatricula.sim, cobrança: impedirCobrancaMatricula.sim },
             nao: { negativacao: impedirNegativacaoMatricula.nao, cobrança: impedirCobrancaMatricula.nao }
@@ -182,12 +186,12 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
         const shouldBlock = await bloquearMatricula(comarca, gerencia)
         const res = bloqueioParams[shouldBlock]
         const { negativacao, cobrança } = bloqueioParams[shouldBlock]
-        return new EspaiderMatriculaDataStructure({ matricula, numeroDoProcesso, negativacao, cobrança })
+        return new EspaiderMatriculaDataStructure({ matricula, numeroProcesso, negativacao, cobrança })
     }
 
     async function bloquearMatricula(comarca, gerencia) {
         const sheetName = planilhaBloquearMatricula
-        const foundEntries = await loadOptionsInSheetRange(sheetName, null,
+        const foundEntries = await loadSheetRange(sheetName, null,
             { operator: "insensitiveStrictEquality", val: comarca}, false, false)
         if (foundEntries.length < 1) return null
         const [ , ppjcm, ppjce ] = foundEntries[0]
