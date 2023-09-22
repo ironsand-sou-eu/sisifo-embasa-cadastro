@@ -1,4 +1,4 @@
-import { gSheetsUrls } from "../envVars";
+import { googleUrls } from "../envVars";
 
 const textualReferenceType = {
     vara: "uma vara",
@@ -17,16 +17,16 @@ const textualReferenceType = {
 };
 
 const gSheetUrl = {
-    vara: gSheetsUrls.frontendBase + gSheetsUrls.juizosSheetId,
-    tipoVara: gSheetsUrls.frontendBase + gSheetsUrls.juizosSheetId,
-    instanciaCnj: gSheetsUrls.frontendBase + gSheetsUrls.juizosSheetId,
-    orgaoJudicial: gSheetsUrls.frontendBase + gSheetsUrls.juizosSheetId,
-    tipoJustica: gSheetsUrls.frontendBase + gSheetsUrls.juizosSheetId,
-    juizo: gSheetsUrls.frontendBase + gSheetsUrls.juizosSheetId,
-    andamento: gSheetsUrls.frontendBase + gSheetsUrls.andamentosSheetId,
-    tarefa: gSheetsUrls.frontendBase + gSheetsUrls.tarefasSheetId,
-    gts: gSheetsUrls.frontendBase + gSheetsUrls.gtsSheetId,
-    pedido: gSheetsUrls.frontendBase + gSheetsUrls.pedidosProvisionamentosSheetId
+    vara: googleUrls.sheetsFrontendBase + googleUrls.juizosSheetId,
+    tipoVara: googleUrls.sheetsFrontendBase + googleUrls.juizosSheetId,
+    instanciaCnj: googleUrls.sheetsFrontendBase + googleUrls.juizosSheetId,
+    orgaoJudicial: googleUrls.sheetsFrontendBase + googleUrls.juizosSheetId,
+    tipoJustica: googleUrls.sheetsFrontendBase + googleUrls.juizosSheetId,
+    juizo: googleUrls.sheetsFrontendBase + googleUrls.juizosSheetId,
+    andamento: googleUrls.sheetsFrontendBase + googleUrls.andamentosSheetId,
+    tarefa: googleUrls.sheetsFrontendBase + googleUrls.tarefasSheetId,
+    gts: googleUrls.sheetsFrontendBase + googleUrls.gtsSheetId,
+    pedido: googleUrls.sheetsFrontendBase + googleUrls.pedidosProvisionamentosSheetId
 };
 
 function linkOrText(type, text) {
