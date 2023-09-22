@@ -3,7 +3,7 @@ import hardcoded from "../hardcodedValues"
 class EspaiderPedidoDataStructure
 {
     constructor({
-        id, numeroDoProcesso, nome, valor, databaseAtualizacao,
+        id, numeroProcesso, nome, valor, databaseAtualizacao,
         databaseJuros, riscoOriginal, valorRiscoOriginal, estimativaPagamento,
         riscoBaseadoEm = hardcoded.riscoBaseadoEmPedido,
         indiceAtualizacao = hardcoded.indiceAtualizacaoPedido,
@@ -11,7 +11,7 @@ class EspaiderPedidoDataStructure
     }) {
         Object.assign(this, {
             id, nome, valor, riscoOriginal, riscoBaseadoEm, valorRiscoOriginal,
-            estimativaPagamento, indiceAtualizacao, porcentagemJuros, numeroDoProcesso,
+            estimativaPagamento, indiceAtualizacao, porcentagemJuros, numeroProcesso,
             databaseAtualizacao: databaseAtualizacao ? new Date(databaseAtualizacao.getTime()) : undefined,
             databaseJuros: databaseJuros ? new Date(databaseJuros.getTime()) : undefined
         })
