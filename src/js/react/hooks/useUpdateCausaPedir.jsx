@@ -3,12 +3,13 @@ import { gerencias, planilhaObservacoes, planilhaProvidenciasPorGerencia,
 import hardcoded from "../../hardcodedValues"
 import { useGoogleSheets } from "./connectors/useGoogleSheets"
 
-export default function useUpdateCausaPedir(confirmedData) {
+export default function useUpdateCausaPedir(confirmedData, setLoading, loading) {
     const { loadSheetRange } = useGoogleSheets()
 
     async function updateCausaPedir(causaPedir, setFormData) {
         if (!confirmedData) return
         setFormData(causaPedir, "causaPedir")
+        setLoading({ scrapping: true, creating: false })
 
         const [ naturezaGerenciaFoundEntries, pedidosFoundEntries, allPedidosFoundEntries ] =
             await makeCausaPedirAndIndependentFetches(causaPedir)
@@ -27,6 +28,7 @@ export default function useUpdateCausaPedir(confirmedData) {
         setFormData(nucleo, "nucleo")
         setFormData(responsavelInfo, "advogadoInfo")
         setFormData(responsavelInfo.nome, "advogado")
+        setLoading({ scrapping: false, creating: false })
     }
 
     async function makeCausaPedirAndIndependentFetches(causaPedir) {

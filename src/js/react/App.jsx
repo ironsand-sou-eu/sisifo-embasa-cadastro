@@ -75,6 +75,8 @@ function App() {
                     data={formData}
                     updateData={updateFormData}
                     onSubmit={onSubmit}
+                    setLoading={setLoading}
+                    loading={loading}
                 />
             </MsgSetterContext.Provider>
         </LoadingContext.Provider>
