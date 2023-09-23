@@ -25,17 +25,19 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
     async function finalizeProcessoInfo() {
         const { espaiderProcessoMerged, espaiderPartesMerged, espaiderAndamentosMerged, espaiderPedidosMerged,
             providenciasParams } = mergeConfirmedInfo(scrappedInfo, confirmedInfo)
-        
-        const espaiderProcesso = await finalAdaptProcesso(espaiderProcessoMerged, providenciasParams.dates.subsidios)
+        const [ unidadeDivisaoFoundEntries, bloquearMatriculaFoundEntries ] =
+            await makeFetches(confirmedInfo.localidadeCode, confirmedInfo.comarca)
+        const espaiderProcesso = await finalAdaptProcesso(espaiderProcessoMerged, providenciasParams.dates.subsidios,
+            unidadeDivisaoFoundEntries)
         const espaiderAndamentos = finalAdaptAndamentos(espaiderAndamentosMerged, confirmedInfo.numeroProcesso)
-        const espaiderProvidencias = await finalAdaptProvidencias(providenciasParams.values, confirmedInfo.nucleo,
+        const espaiderProvidencias = finalAdaptProvidencias(providenciasParams.values, confirmedInfo.nucleo,
             confirmedInfo.advogado, espaiderProcesso.prepostoNucleo.responsavelInfo, espaiderAndamentos[0].id)
         const espaiderPartes = finalAdaptPartes(espaiderPartesMerged)
         const espaiderPartesComCpfCnpj = espaiderPartes.filter(parte => !!parte.cpfCnpj)
         const espaiderPartesSemCpfCnpj = espaiderPartes.filter(parte => !parte.cpfCnpj)
         const espaiderPedidos = finalAdaptPedidos(espaiderPedidosMerged, confirmedInfo.numeroProcesso, espaiderProcesso.dataCitacao)
         const espaiderMatricula = await adaptMatricula(confirmedInfo.matricula, confirmedInfo.numeroProcesso,
-            espaiderProcesso.comarca, espaiderProcesso.gerencia)
+            bloquearMatriculaFoundEntries, espaiderProcesso.gerencia)
         
         // if (Drafter.hasErrors([espaiderProvidencias])) throw new Exception(espaiderProvidencias.errorMsgs, msgSetter)
         
@@ -88,10 +90,19 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
         }
     }
 
+    async function makeFetches(localidadeCode, comarca) {
+        const operator = isNumber(localidadeCode) ? "numericEquality" : "insensitiveStrictEquality"
+        const unidadeDivisaoPromise = loadSheetRange(planilhaUnidadesELs, null,
+            { operator, val: localidadeCode}, false, false)
+        const bloquearMatriculaPromise = loadSheetRange(planilhaBloquearMatricula, null,
+            { operator: "insensitiveStrictEquality", val: comarca}, false, false)
+        return await Promise.all([ unidadeDivisaoPromise, bloquearMatriculaPromise ])
+    }
+
     async function finalAdaptProcesso({ numeroProcesso, nomeAdverso, cpfCnpjAdverso, tipoAdverso, condicaoAdverso,
         advogadoAdverso, valorCausa, natureza, tipoAcao, causaPedir, orgao, juizo, comarca, rito, nucleo, advogado,
-        responsavelRegressivo, dataCitacao, gerencia, sistema, errorMsgs }, providenciaSubsidiosDate) {
-        const { unidade, divisao } = await getUnidadeDivisaoFromLocalidadeCode()
+        responsavelRegressivo, dataCitacao, gerencia, sistema, errorMsgs }, providenciaSubsidiosDate, unidadeDivisaoFoundEntries) {
+        const { unidade, divisao } = await getUnidadeDivisaoFromGoogleRow(unidadeDivisaoFoundEntries)
         const siglaUnidade = unidade.split(" - ")[0]
         const prepostoNucleo = await getNucleoResp(responsavelType.preposto, gerencia, causaPedir, providenciaSubsidiosDate, siglaUnidade, divisao)
         
@@ -101,11 +112,7 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
             gerencia, sistema, errorMsgs })
     }
 
-    async function getUnidadeDivisaoFromLocalidadeCode() {
-        const sheetName = planilhaUnidadesELs
-        const operator = isNumber(confirmedInfo.localidadeCode) ? "numericEquality" : "insensitiveStrictEquality"
-        const foundEntries = await loadSheetRange(sheetName, null,
-            { operator, val: confirmedInfo.localidadeCode}, false, false)
+    async function getUnidadeDivisaoFromGoogleRow(foundEntries) {
         if (foundEntries < 1) return null
         const [ , , unidade, , divisao ] = foundEntries[0]
         return { unidade, divisao }
@@ -122,7 +129,7 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
         })
     }
 
-    async function finalAdaptProvidencias(providenciasParams, nucleo, advogado, preposto, idAndamento) {
+    function finalAdaptProvidencias(providenciasParams, nucleo, advogado, preposto, idAndamento) {
         return providenciasParams.map((providParamsValues, index) => {
             const responsavel = providParamsValues.tipoResponsavel === "advogado" ? advogado : preposto
             const numeroProcesso = providParamsValues.numeroProcesso
@@ -182,21 +189,18 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
         })
     }
 
-    async function adaptMatricula(matricula, numeroProcesso, comarca, gerencia) {
+    async function adaptMatricula(matricula, numeroProcesso, bloquearMatriculaFoundEntries, gerencia) {
         const bloqueioParams = {
             sim: { negativacao: impedirNegativacaoMatricula.sim, cobranca: impedirCobrancaMatricula.sim },
             nao: { negativacao: impedirNegativacaoMatricula.nao, cobranca: impedirCobrancaMatricula.nao }
         }
-        const shouldBlock = await bloquearMatricula(comarca, gerencia)
+        const shouldBlock = await bloquearMatricula(bloquearMatriculaFoundEntries, gerencia)
         const res = bloqueioParams[shouldBlock]
         const { negativacao, cobranca } = bloqueioParams[shouldBlock]
         return new EspaiderMatriculaDataStructure({ matricula, numeroProcesso, negativacao, cobranca })
     }
 
-    async function bloquearMatricula(comarca, gerencia) {
-        const sheetName = planilhaBloquearMatricula
-        const foundEntries = await loadSheetRange(sheetName, null,
-            { operator: "insensitiveStrictEquality", val: comarca}, false, false)
+    async function bloquearMatricula(foundEntries, gerencia) {
         if (foundEntries.length < 1) return null
         const [ , ppjcm, ppjce ] = foundEntries[0]
         const switchObj = { ppjcm, ppjce }

@@ -8,32 +8,43 @@ export default function useUpdateCausaPedir(confirmedData) {
 
     async function updateCausaPedir(causaPedir, setFormData) {
         if (!confirmedData) return
-        const { natureza, gerencia } = await getNaturezaGerenciaByCausaPedir(causaPedir)
-        const pedidos = await getStandardPedidos(causaPedir)
-        const providenciasParams = await getProvidenciasParams(gerencia, causaPedir)
-        const { nucleo, responsavelInfo } = await getNucleoResp(responsavelType.advogado, gerencia, causaPedir, providenciasParams.dates.contestar)
         setFormData(causaPedir, "causaPedir")
+
+        const [ naturezaGerenciaFoundEntries, pedidosFoundEntries, allPedidosFoundEntries ] =
+            await makeCausaPedirAndIndependentFetches(causaPedir)
+            
+        const { natureza, gerencia } = getNaturezaGerenciaByCausaPedir(naturezaGerenciaFoundEntries)
         setFormData(natureza, "natureza")
         setFormData(gerencia, "gerencia")
+
+        const pedidos = getStandardPedidos(pedidosFoundEntries, allPedidosFoundEntries)
         setFormData(pedidos, "pedidos")
+
+        const providenciasParams = await getProvidenciasParams(gerencia, causaPedir)
         setFormData(providenciasParams, "providenciasParams")
+
+        const { nucleo, responsavelInfo } = await getNucleoResp(responsavelType.advogado, gerencia, causaPedir, providenciasParams.dates.contestar)
         setFormData(nucleo, "nucleo")
         setFormData(responsavelInfo, "advogadoInfo")
         setFormData(responsavelInfo.nome, "advogado")
     }
 
-    async function getNaturezaGerenciaByCausaPedir(causaPedir) {
-        const foundValues = await loadSheetRange(hardcoded.listaCausasPedirSheet,
+    async function makeCausaPedirAndIndependentFetches(causaPedir) {
+        const naturezaGerenciaFoundValues = loadSheetRange(hardcoded.listaCausasPedirSheet,
             null, { operator: "insensitiveStrictEquality", val: causaPedir}, false, false)
-        let [, natureza, gerencia] = foundValues.length > 0 ? foundValues[0] : [null, null, null]
+        const foundEntries = loadSheetRange(hardcoded.causasDePedirPedidosSheet,
+            null, { operator: "insensitiveStrictEquality", val: causaPedir}, false, false)
+        const allPedidosCodesAndNames = loadSheetRange(hardcoded.pedidosSheet, null, null, false, false)
+        return await Promise.all([ naturezaGerenciaFoundValues, foundEntries, allPedidosCodesAndNames ])
+    }
+
+    function getNaturezaGerenciaByCausaPedir(foundEntries) {
+        let [, natureza, gerencia] = foundEntries.length > 0 ? foundEntries[0] : [null, null, null]
         if (confirmedData.sistema === sistemas.projudiTjba) gerencia = gerencias.ppjcm
         return { natureza, gerencia }
     }
     
-    async function getStandardPedidos(causaPedir) {
-        const foundEntries = await loadSheetRange(hardcoded.causasDePedirPedidosSheet,
-            null, { operator: "insensitiveStrictEquality", val: causaPedir}, false, false)
-        const allPedidosCodesAndNames = await loadSheetRange(hardcoded.pedidosSheet, null, null, false, false)
+    function getStandardPedidos(foundEntries, allPedidosCodesAndNames) {
         return foundEntries.map(entry => {
             const [, pedidoCodName, estimativaTipo, valorProvisionado] = entry
             const [ nome, idComponent ] = getPedidosNameAndIdComponentByCode(pedidoCodName, allPedidosCodesAndNames)
