@@ -3,11 +3,11 @@ import hardcoded from "../hardcodedValues"
 class EspaiderMatriculaDataStructure
 {
     constructor({
-        matricula, numeroProcesso, negativacao, cobrança,
+        matricula, numeroProcesso, negativacao, cobranca,
         pegarHistorico = hardcoded.pegarHistoricoMatricula
     }) {
         Object.assign(this, {
-            matricula, numeroProcesso, negativacao, cobrança, pegarHistorico
+            matricula, numeroProcesso, negativacao, cobranca, pegarHistorico
         })
     }
 

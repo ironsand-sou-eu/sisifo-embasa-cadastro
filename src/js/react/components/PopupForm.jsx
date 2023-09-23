@@ -10,9 +10,9 @@ import useUpdateCausaPedir from "../hooks/useUpdateCausaPedir";
 import { debounce, toISOStringInSalvadorTimezone } from "../../utils/utils";
 import hardcoded from "../../hardcodedValues";
 
-function PopupForm({ onSubmit, data, updateData, setLoading, loading }) {
+function PopupForm({ onSubmit, data, updateData, setLoading }) {
     const [ warningMessages ] = useValidator(data);
-    const { updateCausaPedir } = useUpdateCausaPedir(data, setLoading, loading);
+    const { updateCausaPedir } = useUpdateCausaPedir(data, setLoading);
 
     return (
         <form className="form-horizontal" action="" method="post"
