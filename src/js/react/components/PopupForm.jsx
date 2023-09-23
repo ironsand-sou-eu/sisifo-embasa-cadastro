@@ -22,7 +22,7 @@ function PopupForm({ onSubmit, data, updateData, setLoading }) {
                     type="text"
                     name="numeroProcesso"
                     label="Número"
-                    value={data?.numeroProcesso}
+                    value={data?.numeroProcesso ?? ""}
                     placeholder="Número do processo"
                     isDisabled
                     colWidth="4"
@@ -31,7 +31,7 @@ function PopupForm({ onSubmit, data, updateData, setLoading }) {
                     type="text"
                     name="matricula"
                     label="Matrícula"
-                    value={data?.matricula}
+                    value={data?.matricula ?? ""}
                     placeholder="Matrícula"
                     onChange={event => updateData(event.target.value, event.target.name)}
                     colWidth="4"
@@ -40,7 +40,7 @@ function PopupForm({ onSubmit, data, updateData, setLoading }) {
                     type="text"
                     name="localidadeCode"
                     label="Código da localidade SCI"
-                    value={data?.localidadeCode}
+                    value={data?.localidadeCode ?? ""}
                     placeholder="Código Localidade SCI"
                     onChange={event => updateData(event.target.value, event.target.name)}
                     colWidth="4"
@@ -67,14 +67,14 @@ function PopupForm({ onSubmit, data, updateData, setLoading }) {
                     label="Nome andamento"
                     sheetName={hardcoded.listaNomesAndamentoSheet}
                     rangeName={hardcoded.listaNomesAndamentoRange}
-                    value={data?.nomeAndamento}
+                    value={data?.nomeAndamento ?? ""}
                     onChange={updateData}
                 />
                 <Text
                     type="datetime-local"
                     name="dataAndamento"
                     label="Data do andamento"
-                    value={toISOStringInSalvadorTimezone(data?.dataAndamento, true)}
+                    value={toISOStringInSalvadorTimezone(data?.dataAndamento, true) ?? ""}
                     onChange={event => updateData(event.target.value, event.target.name)}
                 />
             </div>
@@ -91,7 +91,7 @@ function PopupForm({ onSubmit, data, updateData, setLoading }) {
                     type="date"
                     name="dataCitacao"
                     label="Citação"
-                    value={toISOStringInSalvadorTimezone(data?.dataCitacao)}
+                    value={toISOStringInSalvadorTimezone(data?.dataCitacao ?? "")}
                     placeholder="Data da citação"
                     onChange={event => updateData(event.target.value, event.target.name)}
                 />
@@ -107,7 +107,7 @@ function PopupForm({ onSubmit, data, updateData, setLoading }) {
                     type="text"
                     name="obsParaAdvogado"
                     label="Observações"
-                    value={data?.obsParaAdvogado}
+                    value={data?.obsParaAdvogado ?? ""}
                     placeholder="Observações"
                     onChange={event => updateData(event.target.value, event.target.name)}
                 />
@@ -128,7 +128,7 @@ function PopupForm({ onSubmit, data, updateData, setLoading }) {
                     label="Rito"
                     sheetName={hardcoded.listaRitosSheet}
                     rangeName={hardcoded.listaRitosRange}
-                    value={data?.rito}
+                    value={data?.rito ?? ""}
                     onChange={updateData}
                 />
                 <Select
@@ -137,7 +137,7 @@ function PopupForm({ onSubmit, data, updateData, setLoading }) {
                     sheetName={hardcoded.listaTiposAcaoSheet}
                     rangeName={hardcoded.listaTiposAcaoRange}
 
-                    value={data?.tipoAcao}
+                    value={data?.tipoAcao ?? ""}
                     onChange={updateData}
                 />
             </div>
