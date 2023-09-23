@@ -72,13 +72,11 @@ export default function useExporter(msgSetter) {
             sheetId,
             token,
             sheetName: hardcoded.cadastroProcessos,
-            checkSuccessfulCreation: responseJson => responseJson === true, //TODO: verificar qual é a função
-            getEntityName: processoInfo => processoInfo.numeroProcesso,
             msgs: {
                 update: "Inserindo processo",
                 success: "processo(s) inserido(s).",
-                failStart: "Erro ao adicionar processo",
-                failEnd: "."
+                failStart: "Erro ao adicionar processo.",
+                failEnd: "criado(s)."
             }
         }
         await writeEntitiesToSheet(params)
@@ -93,13 +91,11 @@ export default function useExporter(msgSetter) {
             sheetId,
             token,
             sheetName: hardcoded.cadastroMatriculas,
-            checkSuccessfulCreation: responseJson => responseJson === true, //TODO: verificar qual é a função
-            getEntityName: processoInfo => processoInfo.numeroProcesso,
             msgs: {
                 update: "Inserindo matrícula",
                 success: "matrícula(s) inserida(s).",
-                failStart: "Erro ao adicionar matrícula",
-                failEnd: "."
+                failStart: "Erro ao adicionar matrículas.",
+                failEnd: "criada(s)."
             }
         }
         await writeEntitiesToSheet(params)
@@ -115,13 +111,11 @@ export default function useExporter(msgSetter) {
             sheetId,
             token,
             sheetName: hasCpfCnpj ? hardcoded.cadastroLitisconsortes : hardcoded.cadastroLitisconsortesSemCpf,
-            checkSuccessfulCreation: responseJson => responseJson === true, //TODO: verificar qual é a função
-            getEntityName: processoInfo => processoInfo.numeroProcesso,
             msgs: {
                 update: `Inserindo litisconsorte ${comSem} CPF/CNPJ`,
                 success: `litisconsorte(s) ${comSem} CPF/CNPJ inserido(s).`,
-                failStart: `Erro ao adicionar o litisconsorte ${comSem} CPF/CNPJ`,
-                failEnd: "."
+                failStart: `Erro ao adicionar litisconsortes ${comSem} CPF/CNPJ.`,
+                failEnd: "criado(s)."
             }
         }
         await writeEntitiesToSheet(params)
@@ -137,13 +131,11 @@ export default function useExporter(msgSetter) {
             sheetId,
             token,
             sheetName: hardcoded.cadastroAndamentos,
-            checkSuccessfulCreation: responseJson => responseJson === true, //TODO: verificar qual é a função
-            getEntityName: processoInfo => processoInfo.numeroProcesso,
             msgs: {
                 update: "Inserindo andamento",
                 success: "andamento(s) inserido(s).",
-                failStart: "Erro ao adicionar o andamento",
-                failEnd: "."
+                failStart: "Erro ao adicionar andamentos.",
+                failEnd: "criado(s)."
             }
         }
         await writeEntitiesToSheet(params)
@@ -167,13 +159,11 @@ export default function useExporter(msgSetter) {
             sheetId,
             token,
             sheetName: hardcoded.cadastroProvidencias,
-            checkSuccessfulCreation: responseJson => responseJson === true, //TODO: verificar qual é a função
-            getEntityName: processoInfo => processoInfo.numeroProcesso,
             msgs: {
                 update: "Inserindo providência",
                 success: "providência(s) inserida(s).",
-                failStart: "Erro ao adicionar a providência",
-                failEnd: "."
+                failStart: "Erro ao adicionar providências.",
+                failEnd: "criada(s)."
             }
         }
         await writeEntitiesToSheet(params)
@@ -197,35 +187,31 @@ export default function useExporter(msgSetter) {
             sheetId,
             token,
             sheetName: hardcoded.cadastroPedidos,
-            checkSuccessfulCreation: responseJson => responseJson === true, //TODO: verificar qual é a função
-            getEntityName: processoInfo => processoInfo.numeroProcesso,
             msgs: {
                 update: "Inserindo pedido",
                 success: "pedido(s) inserido(s).",
-                failStart: "Erro ao adicionar o pedido",
-                failEnd: "."
+                failStart: "Erro ao adicionar pedidos.",
+                failEnd: "criado(s)."
             }
         }
         await writeEntitiesToSheet(params)
     }
 
     async function writeEntitiesToSheet(creationParams) {
-        const { entitiesArray, sheetId, token, sheetName, checkSuccessfulCreation, getEntityName, msgs } = creationParams
+        const { entitiesArray, sheetId, token, sheetName, msgs } = creationParams
         const qtd = entitiesArray.length
         msgSetter.setSingleProcessingMsg(`${msgs.update} (${qtd})...`)
-        const response = await writeToSheet(sheetId, sheetName, entitiesArray, token)
-        console.log(response)
-
-        // const requestSuccessful = (response.status && response.status >=200 && response.status < 300 )
-        // const createdSuccessful = checkSuccessfulCreation(await response.json())
-        // if (!(requestSuccessful && createdSuccessful)) {
-        //     const msg = msgs.failStart + " " + getEntityName(entitiesArray[index]) + " "  + msg.failEnd
-        //     msgSetter.addMsg({ type: "fail", msg })
-        //     return
-        // }
-
-        msgSetter.clear({ type: "processing" })
-        msgSetter.addMsg({ type: "success", msg: `${qtd} ${msgs.success}` })
+        const jSonResponse = await writeToSheet(sheetId, sheetName, entitiesArray, token)
+        // const requestSuccessful = (jSonResponse.status && jSonResponse.status >=200 && jSonResponse.status < 300 )
+        const createdRowsAmount = jSonResponse.updates.updatedRows ?? 0
+        const creationSuccessful = createdRowsAmount === qtd
+        if (!creationSuccessful) { //(requestSuccessful && creationSuccessful)) {
+            const msg = `${msgs.failStart} ${createdRowsAmount}/${qtd} ${msgs.failEnd}`
+            msgSetter.clear({ type: "processing" })
+            msgSetter.addMsg({ type: "fail", msg })
+            return
+        }
+        msgSetter.addMsg({ type: "success", msg: `${createdRowsAmount}/${qtd} ${msgs.success}` })
     }
 
     return { createAll }

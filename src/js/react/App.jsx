@@ -30,7 +30,7 @@ function App() {
     function onSubmit(e) {
         e.preventDefault()
         setLoading({ scrapping: false, creating: true })
-        console.log({scrappedData, formData})
+        // console.log({scrappedData, formData})
         finalizeProcessoInfo()
     }
 
