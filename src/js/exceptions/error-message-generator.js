@@ -60,30 +60,27 @@ const generateValidationMsg = {
         + 'estarão no cadastro e deverão ser verificados manualmente.'
     },
 
-    noClient: () => {
-        return 'Você não indicou qual das partes é o cliente. Para fazê-lo, vá '
-        + 'até a lista de partes e marque a caixa de seleção ao lado do nome do cliente.'
+    noLocalidadeCode: () => {
+        return 'Você não indicou o código da localidade no SCI.'
     },
 
-    noClientNumber: () => {
-        return 'Você não indicou um número de pasta no sistema do cliente (isso só faz '
-        + 'falta se o cliente usar um sistema próprio com números de pasta).'
+    noMatricula: () => {
+        return 'Você não indicou a matrícula comercial. Isso não é essencial, mas '
+        + 'é recomendado inseri-la, se o processo tratar sobre uma matrícula.'
     },
 
-    noSubject: () => {
-        return 'Você não indicou o assunto (campo "Assunto Projuris").'
+    noCausaPedir: () => {
+        return 'Você não indicou a causa de pedir.'
     },
 
-    noWorkgroup: () => {
-        return 'Você não indicou o grupo de trabalho responsável pelo processo. Isso pode '
-        + 'fazer com que as tarefas não sejam cadastradas corretamente.'
+    noAdvogado: () => {
+        return 'Você não indicou o advogado responsável pelo processo.'
     },
 
-    noLawyer: () => {
-        return 'Você não indicou o(s) advogado(s) responsável(is) pelo processo. Isso pode '
-        + 'fazer com que as tarefas não sejam cadastradas corretamente.'
-    }
-
+    noPedidos: () => {
+        return 'Você não indicou pedidos. Isso não é essencial, mas '
+        + 'é recomendado inseri-los, para não afetar o provisionamento.'
+    },
 };
 
 export default generateErrMsg;

@@ -3,17 +3,14 @@ import { generateValidationMsg } from "../../exceptions/error-message-generator"
 export default function useValidator(formData) {
     const warningMessages = [];
     if (!formData) return [ warningMessages ];
-    const { assunto, gruposDeTrabalho, responsaveis, pastaCliente, partesRequerentes, partesRequeridas } = formData;
+    const { localidadeCode, matricula, causaPedir, advogado, pedidos } = formData;
 
     function validateAll() {
-        if (assunto == null) warningMessages.push(generateValidationMsg.noSubject());
-        if (gruposDeTrabalho == null) warningMessages.push(generateValidationMsg.noWorkgroup());       
-        if (!responsaveis?.length) warningMessages.push(generateValidationMsg.noLawyer());
-        if (!pastaCliente) warningMessages.push(generateValidationMsg.noClientNumber());
-
-        const allPartes = [ ...partesRequerentes, ...partesRequeridas ];
-        const clients = allPartes.filter(({ flagCliente }) => flagCliente == true);
-        if (clients.length === 0) warningMessages.push(generateValidationMsg.noClient());
+        if (!localidadeCode) warningMessages.push(generateValidationMsg.noLocalidadeCode());
+        if (!matricula) warningMessages.push(generateValidationMsg.noMatricula());
+        if (!causaPedir) warningMessages.push(generateValidationMsg.noCausaPedir());
+        if (!advogado) warningMessages.push(generateValidationMsg.noAdvogado());
+        if (!pedidos?.length) warningMessages.push(generateValidationMsg.noPedidos());
     };    
 
     function prependGeneralWarning() {

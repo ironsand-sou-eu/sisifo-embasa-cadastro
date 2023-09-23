@@ -39,7 +39,7 @@ function PopupForm({ onSubmit, data, updateData, setLoading, loading }) {
                 <Text
                     type="text"
                     name="localidadeCode"
-                    label="Localidade SCI"
+                    label="Código da localidade SCI"
                     value={data?.localidadeCode}
                     placeholder="Código Localidade SCI"
                     onChange={event => updateData(event.target.value, event.target.name)}
