@@ -61,8 +61,7 @@ export function useGoogleSheets() {
             headers: {
                 Authorization: 'Bearer ' + token,
                 'Content-Type': 'application/json'
-            },
-            'contentType': 'json'
+            }
         }
         return fetch(uri, params)
     }
@@ -81,8 +80,7 @@ export function useGoogleSheets() {
             headers: {
                 Authorization: 'Bearer ' + token,
                 'Content-Type': 'application/json'
-            },
-            'contentType': 'json'
+            }
         }
         const response = await fetch(uri, params)
         const json = await response.json()
@@ -102,11 +100,36 @@ export function useGoogleSheets() {
                 Authorization: 'Bearer ' + token,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name: fileName, parents: [folderId] })
+            body: JSON.stringify({
+                name: fileName,
+                parents: [folderId]
+            })
         }
         const response = await fetch(uri, params)
         const json = await response.json()
         return json.id
+    }
+
+    async function writeToSheet(workbookId, sheetName, values, token) {
+        if (!token) token = await fetchGoogleToken()
+        const qsParams = new URLSearchParams()
+        qsParams.set("valueInputOption", "RAW")
+        const queryString = qsParams.toString()
+        const uri = `${googleUrls.sheetsApiBase}${workbookId}/values/${sheetName}:append?${queryString}`
+        const params = {
+            method: 'POST',
+            async: true,
+            headers: {
+                Authorization: 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                majorDimension: "ROWS",
+                values
+            })
+        }
+        const response = await fetch(uri, params)
+        return await response.json()
     }
 
     async function loadSheetRange (sheetName, rangeName, filterObject = undefined, shallMap = true, readByColumns = false, workbookId) {
@@ -139,5 +162,5 @@ export function useGoogleSheets() {
         }
     }
 
-    return { fetchGoogleToken, fetchGoogleSheetData, getFileId, createSheet, loadSheetRange, googleUrls }
+    return { fetchGoogleToken, fetchGoogleSheetData, getFileId, createSheet, loadSheetRange, writeToSheet, googleUrls }
 }

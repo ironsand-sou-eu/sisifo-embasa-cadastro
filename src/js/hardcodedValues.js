@@ -37,7 +37,14 @@ const hardcoded = {
     listaCausasPedirRange: "causasPedir",
     listaAdvogadosRange: "advogados",
     listaRitosRange: "ritos",
-    listaTiposAcaoRange: "tiposAcao"
+    listaTiposAcaoRange: "tiposAcao",
+    cadastroProcessos: "processos",
+    cadastroLitisconsortes: "litisconsortes",
+    cadastroLitisconsortesSemCpf: "litisconsortesSemCPF",
+    cadastroAndamentos: "andamentos",
+    cadastroProvidencias: "providencias",
+    cadastroMatriculas: "matriculas",
+    cadastroPedidos: "pedidos"
 }
 
 export default hardcoded
