@@ -7,7 +7,7 @@ import PedidosBox from "./PedidosBox";
 import Button from "./Button";
 import useValidator from "../hooks/useValidator";
 import useUpdateCausaPedir from "../hooks/useUpdateCausaPedir";
-import { debounce, toBrDateString } from "../../utils/utils";
+import { debounce, toISOStringInSalvadorTimezone } from "../../utils/utils";
 import hardcoded from "../../hardcodedValues";
 
 function PopupForm({ onSubmit, data, updateData }) {
@@ -74,7 +74,7 @@ function PopupForm({ onSubmit, data, updateData }) {
                     type="datetime-local"
                     name="dataAndamento"
                     label="Data do andamento"
-                    value={toBrDateString(data?.dataAndamento, true)}
+                    value={toISOStringInSalvadorTimezone(data?.dataAndamento, true)}
                     onChange={event => updateData(event.target.value, event.target.name)}
                 />
             </div>
@@ -91,7 +91,7 @@ function PopupForm({ onSubmit, data, updateData }) {
                     type="date"
                     name="dataCitacao"
                     label="Citação"
-                    value={toBrDateString(data?.dataCitacao)}
+                    value={toISOStringInSalvadorTimezone(data?.dataCitacao)}
                     placeholder="Data da citação"
                     onChange={event => updateData(event.target.value, event.target.name)}
                 />

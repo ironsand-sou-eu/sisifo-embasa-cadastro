@@ -28,7 +28,7 @@ export function debounce(cb, delay = 250) {
     }
 }
 
-export function toBrDateString(date, outputHours = false) {
+export function toISOStringInSalvadorTimezone(date, outputHours = false) {
     if (!date) return null
     const dateObj = new Date(date)
     const dateCompensatingTimezone = new Date(dateObj.getTime() - (3 * 60 * 60 * 1000))
@@ -40,6 +40,22 @@ export function toBrDateString(date, outputHours = false) {
         const hour = String(dateCompensatingTimezone.getUTCHours()).padStart(2, "0")
         const minute = String(dateCompensatingTimezone.getUTCMinutes()).padStart(2, "0")
         finalStr += `T${hour}:${minute}`
+    }
+    return finalStr
+}
+
+export function toBrDateString(date, outputHours = false) {
+    if (!date) return null
+    const dateObj = new Date(date)
+    const dateCompensatingTimezone = new Date(dateObj.getTime() - (3 * 60 * 60 * 1000))
+    const year = dateCompensatingTimezone.getUTCFullYear()
+    const month = String(dateCompensatingTimezone.getUTCMonth()).padStart(2, "0")
+    const day = String(dateCompensatingTimezone.getUTCDate()).padStart(2, "0")
+    let finalStr = `${day}/${month}/${year}`
+    if (outputHours) {
+        const hour = String(dateCompensatingTimezone.getUTCHours()).padStart(2, "0")
+        const minute = String(dateCompensatingTimezone.getUTCMinutes()).padStart(2, "0")
+        finalStr += ` ${hour}:${minute}`
     }
     return finalStr
 }
