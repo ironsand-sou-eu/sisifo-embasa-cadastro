@@ -29,16 +29,20 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
         const espaiderProcesso = await finalAdaptProcesso(espaiderProcessoMerged, providenciasParams.dates.subsidios)
         const espaiderAndamentos = finalAdaptAndamentos(espaiderAndamentosMerged, confirmedInfo.numeroProcesso)
         const espaiderProvidencias = await finalAdaptProvidencias(providenciasParams.values, confirmedInfo.nucleo,
-            confirmedInfo.advogado, espaiderProcesso.prepostoNucleo, espaiderAndamentos[0].id)
+            confirmedInfo.advogado, espaiderProcesso.prepostoNucleo.responsavelInfo, espaiderAndamentos[0].id)
         const espaiderPartes = finalAdaptPartes(espaiderPartesMerged)
+        const espaiderPartesComCpfCnpj = espaiderPartes.filter(parte => !!parte.cpfCnpj)
+        const espaiderPartesSemCpfCnpj = espaiderPartes.filter(parte => !parte.cpfCnpj)
         const espaiderPedidos = finalAdaptPedidos(espaiderPedidosMerged, confirmedInfo.numeroProcesso, espaiderProcesso.dataCitacao)
         const espaiderMatricula = await adaptMatricula(confirmedInfo.matricula, confirmedInfo.numeroProcesso,
             espaiderProcesso.comarca, espaiderProcesso.gerencia)
         
         // if (Drafter.hasErrors([espaiderProvidencias])) throw new Exception(espaiderProvidencias.errorMsgs, msgSetter)
         
-        // console.log({ espaiderProcesso, espaiderMatricula, espaiderPartes, espaiderAndamentos, espaiderPedidos, espaiderProvidencias }, msgSetter)
-        createAll({ espaiderProcesso, espaiderMatricula, espaiderPartes, espaiderAndamentos, espaiderPedidos, espaiderProvidencias })
+        // console.log({ espaiderProcesso, espaiderMatricula, espaiderPartesComCpfCnpj, espaiderPartesSemCpfCnpj,
+            // espaiderAndamentos, espaiderPedidos, espaiderProvidencias }, msgSetter)
+        createAll({ espaiderProcesso, espaiderMatricula, espaiderPartesComCpfCnpj, espaiderPartesSemCpfCnpj,
+            espaiderAndamentos, espaiderPedidos, espaiderProvidencias })
     }
 
     function mergeConfirmedInfo(scrappedInfo, confirmedInfo) {
@@ -180,13 +184,13 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
 
     async function adaptMatricula(matricula, numeroProcesso, comarca, gerencia) {
         const bloqueioParams = {
-            sim: { negativacao: impedirNegativacaoMatricula.sim, cobrança: impedirCobrancaMatricula.sim },
-            nao: { negativacao: impedirNegativacaoMatricula.nao, cobrança: impedirCobrancaMatricula.nao }
+            sim: { negativacao: impedirNegativacaoMatricula.sim, cobranca: impedirCobrancaMatricula.sim },
+            nao: { negativacao: impedirNegativacaoMatricula.nao, cobranca: impedirCobrancaMatricula.nao }
         }
         const shouldBlock = await bloquearMatricula(comarca, gerencia)
         const res = bloqueioParams[shouldBlock]
-        const { negativacao, cobrança } = bloqueioParams[shouldBlock]
-        return new EspaiderMatriculaDataStructure({ matricula, numeroProcesso, negativacao, cobrança })
+        const { negativacao, cobranca } = bloqueioParams[shouldBlock]
+        return new EspaiderMatriculaDataStructure({ matricula, numeroProcesso, negativacao, cobranca })
     }
 
     async function bloquearMatricula(comarca, gerencia) {
