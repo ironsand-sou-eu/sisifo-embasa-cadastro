@@ -1,5 +1,7 @@
 import { googleUrls } from "../envVars";
 
+//TODO: Adaptar paulatinamente ao Espaider.
+
 const textualReferenceType = {
     vara: "uma vara",
     tipoVara: "um tipo de vara",

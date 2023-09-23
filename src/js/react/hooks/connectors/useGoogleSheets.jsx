@@ -1,7 +1,6 @@
 import generateErrMsg from "../../../exceptions/error-message-generator"
 import compareWithOperator from "../../../utils/utils"
 import { googleUrls } from "../../../envVars"
-import hardcoded from "../../../hardcodedValues"
 
 export async function fetchGoogleSheetRowsMatchingExpression(sheetName, expressionToSearch, token, getMany) {
     if (!token) token = await fetchGoogleToken()
