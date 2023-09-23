@@ -5,7 +5,7 @@ import EspaiderParteDataStructure from "../../data-structures/EspaiderParteDataS
 import EspaiderPedidoDataStructure from "../../data-structures/EspaiderPedidoDataStructure"
 import EspaiderMatriculaDataStructure from "../../data-structures/EspaiderMatriculaDataStructure"
 import { impedirCobrancaMatricula, impedirNegativacaoMatricula, planilhaBloquearMatricula,
-    planilhaUnidadesELs, responsavelType } from "../../enums"
+    planilhaObservacoes, planilhaUnidadesELs, responsavelType } from "../../enums"
 import Exception from "../../exceptions/Exception"
 import generateErrMsg from "../../exceptions/error-message-generator"
 import hardcoded from "../../hardcodedValues"
@@ -30,7 +30,7 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
         const espaiderProcesso = await finalAdaptProcesso(espaiderProcessoMerged, providenciasParams.dates.subsidios,
             unidadeDivisaoFoundEntries)
         const espaiderAndamentos = finalAdaptAndamentos(espaiderAndamentosMerged, confirmedInfo.numeroProcesso)
-        const espaiderProvidencias = finalAdaptProvidencias(providenciasParams.values, confirmedInfo.nucleo,
+        const espaiderProvidencias = await finalAdaptProvidencias(providenciasParams.values, confirmedInfo.nucleo,
             confirmedInfo.advogado, espaiderProcesso.prepostoNucleo.responsavelInfo, espaiderAndamentos[0].id)
         const espaiderPartes = finalAdaptPartes(espaiderPartesMerged)
         const espaiderPartesComCpfCnpj = espaiderPartes.filter(parte => !!parte.cpfCnpj)
@@ -42,7 +42,7 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
         // if (Drafter.hasErrors([espaiderProvidencias])) throw new Exception(espaiderProvidencias.errorMsgs, msgSetter)
         
         // console.log({ espaiderProcesso, espaiderMatricula, espaiderPartesComCpfCnpj, espaiderPartesSemCpfCnpj,
-            // espaiderAndamentos, espaiderPedidos, espaiderProvidencias }, msgSetter)
+        //     espaiderAndamentos, espaiderPedidos, espaiderProvidencias }, msgSetter)
         createAll({ espaiderProcesso, espaiderMatricula, espaiderPartesComCpfCnpj, espaiderPartesSemCpfCnpj,
             espaiderAndamentos, espaiderPedidos, espaiderProvidencias })
     }
@@ -129,24 +129,45 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
         })
     }
 
-    function finalAdaptProvidencias(providenciasParams, nucleo, advogado, preposto, idAndamento) {
-        return providenciasParams.map((providParamsValues, index) => {
+    async function finalAdaptProvidencias(providenciasParams, nucleo, advogado, preposto, idAndamento) {
+        const providenciasPromises = providenciasParams.map(async (providParamsValues, index) => {
+            const nome = providParamsValues.nome
+            if (nome.toLowerCase() === "analisar processo novo" && !confirmedInfo.recomendarAnalise) return null
             const responsavel = providParamsValues.tipoResponsavel === "advogado" ? advogado : preposto
             const numeroProcesso = providParamsValues.numeroProcesso
             const numeroDesdobramento = providParamsValues.numeroDesdobramento
-            const nome = providParamsValues.nome
             const dataFinal = new Date(providParamsValues.dataFinal)
             const alertar = providParamsValues.alertar
             const diasAntecedenciaAlerta = providParamsValues.diasAntecedenciaAlerta
             const gerarAndamento = providParamsValues.gerarAndamento
             const nomeAndamentoParaGerar = providParamsValues.nomeAndamentoParaGerar
-            const obs = providParamsValues.obs
+            const obs = await getObservacao(nome)
             const id = generateProvidenciaId(numeroProcesso, dataFinal, index)
             return new EspaiderProvidenciaDataStructure({
                 id, idAndamento, nome, dataFinal, alertar, diasAntecedenciaAlerta, nucleo, responsavel,
                 obs, gerarAndamento, numeroProcesso, numeroDesdobramento, nomeAndamentoParaGerar
             })
         })
+        const providencias = await Promise.all(providenciasPromises)
+        return providencias.filter(providencia => !!providencia)
+    }
+
+    async function getObservacao(nomeProvidencia) {
+        const dataAndamentoFormatada = new Date(confirmedInfo.dataAndamento).toLocaleDateString("pt-BR")
+        let obs = `Sísifo: ${confirmedInfo.nomeAndamento} - ${dataAndamentoFormatada}`
+        switch (nomeProvidencia.toLowerCase()) {
+        case "analisar processo novo":
+            obs += confirmedInfo.obsParaAdvogado ? `\nObs. do cadastro: ${confirmedInfo.obsParaAdvogado}` : ""
+            break;
+
+        case "levantar subsídios":
+            const sheetName = planilhaObservacoes[String(confirmedInfo.gerencia).toLowerCase()]
+            const foundEntriesByGerencia = await loadSheetRange(sheetName, null,
+                { operator: "insentiviveIncludes", val: [confirmedInfo.causaPedir, "geral"]}, false, false)
+            obs += (foundEntriesByGerencia.length > 0) ? `\n\n${foundEntriesByGerencia[0][1]}` : ""
+            break;
+        }
+        return obs
     }
 
     function finalAdaptPartes(espaiderPartes) {

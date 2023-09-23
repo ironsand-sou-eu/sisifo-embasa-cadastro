@@ -1,9 +1,9 @@
-import { gerencias, planilhaObservacoes, planilhaProvidenciasPorGerencia,
+import { gerencias, planilhaProvidenciasPorGerencia,
     planilhaResponsaveisPorGerencia, responsavelType, sistemas } from "../../enums"
 import hardcoded from "../../hardcodedValues"
 import { useGoogleSheets } from "./connectors/useGoogleSheets"
 
-export default function useUpdateCausaPedir(confirmedData, setLoading, loading) {
+export default function useUpdateCausaPedir(confirmedData, setLoading) {
     const { loadSheetRange } = useGoogleSheets()
 
     async function updateCausaPedir(causaPedir, setFormData) {
@@ -66,14 +66,13 @@ export default function useUpdateCausaPedir(confirmedData, setLoading, loading) 
             const [ , nomeProvidencia, tipoResponsavel, referencialDateType, daysFromReferencialDate, alertar,
                 diasAntecedenciaAlerta, gerarAndamento, nomeAndamentoParaGerar ] = sheetRow
             const dataFinal = calculateDataFinal(referencialDateType, daysFromReferencialDate)
-            const obs = await getObservacao(nomeProvidencia, causaPedir, gerencia)
             return {
                 numeroProcesso: confirmedData.numeroProcesso,
                 numeroDesdobramento: confirmedData.numeroProcesso,
                 nome: nomeProvidencia,
                 dataFinal, tipoResponsavel, referencialDateType,
                 daysFromReferencialDate, alertar, diasAntecedenciaAlerta,
-                gerarAndamento, nomeAndamentoParaGerar, obs
+                gerarAndamento, nomeAndamentoParaGerar
             }
         }))
         const provContestar = values.find(providencia => providencia.nome.toLowerCase() === "contestar - virtual")
@@ -98,19 +97,6 @@ export default function useUpdateCausaPedir(confirmedData, setLoading, loading) 
                 break;
         }
         return new Date(dataAndamento.getTime() + Number(daysFromReferencialDate) * 24 * 60 * 60 * 1000 )
-    }
-
-    async function getObservacao(nomeProvidencia, causaPedir, gerencia) {
-        const dataAndamentoFormatada = new Date(confirmedData.dataAndamento).toLocaleDateString("pt-BR")
-        let obs = `Sísifo: ${confirmedData.nomeAndamento} - ${dataAndamentoFormatada}`
-        obs += (nomeProvidencia.toLowerCase() === "levantar subsídios" && confirmedData.obsParaAdvogado !== "")
-            ? `\nObs. do cadastro: ${confirmedData.obsParaAdvogado}`
-            : ""
-        const sheetName = planilhaObservacoes[String(gerencia).toLowerCase()]
-        const foundEntriesByGerencia = await loadSheetRange(sheetName, null,
-            { operator: "insentiviveIncludes", val: [causaPedir, "geral"]}, false, false)
-        if (foundEntriesByGerencia.length > 0) obs += `\n\n${foundEntriesByGerencia[0][1]}`
-        return obs
     }
 
     async function getNucleoResp(responsavelKind, gerencia, causaPedir, providenciaDate, unidade, el) {
