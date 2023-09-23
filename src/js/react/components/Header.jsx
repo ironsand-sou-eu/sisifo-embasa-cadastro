@@ -5,7 +5,7 @@ function Header() {
         <header className="centered">
             <img
                 src="./images/logo.png"
-                alt="Marca do escritório"
+                alt="Logotipo"
             />
         </header>
     )

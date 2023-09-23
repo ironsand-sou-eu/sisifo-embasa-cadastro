@@ -54,6 +54,10 @@ header.well {
     padding: 0;
 }
 
+header img {
+    height: 83px;
+}
+
 input:disabled {
     cursor: text !important;
 }
