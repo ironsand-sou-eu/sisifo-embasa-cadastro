@@ -63,7 +63,7 @@ const generateValidationMsg = {
     },
 
     noLocalidadeCode: () => {
-        return 'Você não indicou o código da localidade no SCI.'
+        return 'Você não indicou o código da localidade no SCI. É obrigatório indicar uma.'
     },
 
     noMatricula: () => {

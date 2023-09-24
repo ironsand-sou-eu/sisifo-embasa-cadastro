@@ -2,15 +2,17 @@ import React, { useContext } from "react";
 import { LoadingContext } from "../App";
 import Messenger from "./Messenger";
 
-function Button({ label, warningMessages }) {
+function Button({ label, warningMessages, missingEssential }) {
     const loading = useContext(LoadingContext);
     const isLoading = loading.scrapping || loading.creating;
-    const open = warningMessages?.length == 0 ? "open" : "";
+    const open = (warningMessages?.length) == 0 ? "open" : "";
     return (
         <>
             <div className="capped-btn-container" {...{open}}>
                 <button type="submit" className="btn btn-warning capped-btn" disabled={isLoading}>{label}</button>
-                <div className="btn-cap-group" onClick={() => document.querySelector(".capped-btn-container").setAttribute("open", "") }>
+                <div className="btn-cap-group" onClick={() => {
+                    if (!missingEssential) document.querySelector(".capped-btn-container").setAttribute("open", "")
+                    } }>
                     <svg className="btn-cap" viewBox="0 0 100 55">
                         <defs>
                             <pattern id="box-texture" viewBox="0 0 10 10" width="10%" height="10%">

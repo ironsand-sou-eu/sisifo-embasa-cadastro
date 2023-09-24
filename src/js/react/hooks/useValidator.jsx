@@ -2,14 +2,21 @@ import { generateValidationMsg } from "../../exceptions/error-message-generator"
 
 export default function useValidator(formData) {
     const warningMessages = [];
+    let missingEssential = false;
     if (!formData) return [ warningMessages ];
     const { localidadeCode, matricula, causaPedir, advogado, pedidos } = formData;
 
     function validateAll() {
-        if (!localidadeCode) warningMessages.push(generateValidationMsg.noLocalidadeCode());
+        if (!localidadeCode) {
+            warningMessages.push(generateValidationMsg.noLocalidadeCode());
+            missingEssential = true;
+        }
         if (!matricula) warningMessages.push(generateValidationMsg.noMatricula());
         if (!causaPedir) warningMessages.push(generateValidationMsg.noCausaPedir());
-        if (!advogado) warningMessages.push(generateValidationMsg.noAdvogado());
+        if (!advogado) {
+            warningMessages.push(generateValidationMsg.noAdvogado());
+            missingEssential = true;
+        }
         if (!pedidos?.length) warningMessages.push(generateValidationMsg.noPedidos());
     };    
 
@@ -19,5 +26,5 @@ export default function useValidator(formData) {
 
     validateAll();
     prependGeneralWarning();
-    return [ warningMessages ];
+    return { warningMessages, missingEssential };
 }
