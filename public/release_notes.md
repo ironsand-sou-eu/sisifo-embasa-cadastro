@@ -14,3 +14,7 @@
 1.0.201 - FEATURE - Adicionado link para o diretório da
     aplicação na página de opções.
 
+===================== Versão 1.0.4 ====================
+1.0.301 - ISSUE - Implementada verificação para a data
+    final da providênica não cair num fim de semana.
+
