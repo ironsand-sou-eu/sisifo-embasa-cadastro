@@ -1,6 +1,7 @@
 import { gerencias, planilhaProvidenciasPorGerencia,
     planilhaResponsaveisPorGerencia, responsavelType, sistemas } from "../../enums"
 import hardcoded from "../../hardcodedValues"
+import { addDaysToDate, lastWorkdayUntil } from "../../utils/utils"
 import { useGoogleSheets } from "./connectors/useGoogleSheets"
 
 export default function useUpdateCausaPedir(confirmedData, setLoading) {
@@ -97,7 +98,8 @@ export default function useUpdateCausaPedir(confirmedData, setLoading) {
                 dataAndamento = new Date()
                 break;
         }
-        return new Date(dataAndamento.getTime() + Number(daysFromReferencialDate) * 24 * 60 * 60 * 1000 )
+        const calculatedDate = addDaysToDate(dataAndamento, daysFromReferencialDate)
+        return lastWorkdayUntil(calculatedDate)
     }
 
     async function getNucleoResp(responsavelKind, gerencia, causaPedir, providenciaDate, unidade, el) {

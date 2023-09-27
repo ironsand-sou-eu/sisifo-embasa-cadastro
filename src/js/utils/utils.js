@@ -49,6 +49,18 @@ export function toBrDateString(date, outputHours = false, isoFormat = false) {
     return finalStr
 }
 
+export function lastWorkdayUntil(date) {
+    let weekendDaysToSubtract = 0
+    if (date.getDay() === 0) weekendDaysToSubtract = 2
+    if (date.getDay() === 6) weekendDaysToSubtract = 1
+    //TODO: compute holidays
+    return addDaysToDate(calculatedDate, weekendDaysToSubtract)
+}
+
+export function addDaysToDate(date, daysToAdd) {
+    return new Date(date.getTime() + parseInt(daysToAdd) * 24 * 60 * 60 * 1000 )
+}
+
 export function isNumber(x) {
     return parseFloat(x) == x
 }
