@@ -10,3 +10,7 @@
     dência não era somada ao total do advogado res-
     ponsável.
 
+===================== Versão 1.0.3 ====================
+1.0.201 - FEATURE - Adicionado link para o diretório da
+    aplicação na página de opções.
+
