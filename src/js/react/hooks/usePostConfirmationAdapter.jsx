@@ -16,28 +16,28 @@ import { isNumber, parteEhEmbasa } from "../../utils/utils"
 import { useGoogleSheets } from "./connectors/useGoogleSheets"
 import useExporter from "./creators/useExporter"
 
-export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, msgSetter) {
+export default function usePostConfirmationAdapter(scrappedInfo, msgSetter) {
     const { getNucleoResp } = useUpdateCausaPedir(confirmedInfo)
     const { generateAndamentoId, generateProvidenciaId, generatePedidoId } = useIdGenerator()
     const { loadSheetRange } = useGoogleSheets()
     const { createAll } = useExporter(msgSetter)
+    let confirmedInfo
 
-    async function finalizeProcessoInfo() {
+    async function finalizeProcessoInfo(formData) {
+        confirmedInfo = formData
         const { espaiderProcessoMerged, espaiderPartesMerged, espaiderAndamentosMerged, espaiderPedidosMerged,
-            providenciasParams } = mergeConfirmedInfo(scrappedInfo, confirmedInfo)
+            providenciasParams } = mergeConfirmedInfo()
         const [ unidadeDivisaoFoundEntries, bloquearMatriculaFoundEntries ] =
-            await makeFetches(confirmedInfo.localidadeCode, confirmedInfo.comarca)
+            await makeFetches()
         const espaiderProcesso = await finalAdaptProcesso(espaiderProcessoMerged, providenciasParams.dates.subsidios,
             unidadeDivisaoFoundEntries)
-        const espaiderAndamentos = finalAdaptAndamentos(espaiderAndamentosMerged, confirmedInfo.numeroProcesso)
-        const espaiderProvidencias = await finalAdaptProvidencias(providenciasParams.values, confirmedInfo.nucleo,
-            confirmedInfo.advogado, espaiderProcesso.prepostoNucleo.responsavelInfo, espaiderAndamentos[0].id)
+        const espaiderAndamentos = finalAdaptAndamentos(espaiderAndamentosMerged)
+        const espaiderProvidencias = await finalAdaptProvidencias(providenciasParams, espaiderProcesso, espaiderAndamentos[0].id)
         const espaiderPartes = finalAdaptPartes(espaiderPartesMerged)
         const espaiderPartesComCpfCnpj = espaiderPartes.filter(parte => !!parte.cpfCnpj)
         const espaiderPartesSemCpfCnpj = espaiderPartes.filter(parte => !parte.cpfCnpj)
-        const espaiderPedidos = finalAdaptPedidos(espaiderPedidosMerged, confirmedInfo.numeroProcesso, espaiderProcesso.dataCitacao)
-        const espaiderMatricula = await adaptMatricula(confirmedInfo.matricula, confirmedInfo.numeroProcesso,
-            bloquearMatriculaFoundEntries, espaiderProcesso.gerencia)
+        const espaiderPedidos = finalAdaptPedidos(espaiderPedidosMerged, espaiderProcesso.dataCitacao)
+        const espaiderMatricula = await adaptMatricula(bloquearMatriculaFoundEntries, espaiderProcesso.gerencia)
         
         // if (Drafter.hasErrors([espaiderProvidencias])) throw new Exception(espaiderProvidencias.errorMsgs, msgSetter)
         
@@ -47,50 +47,36 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
             espaiderAndamentos, espaiderPedidos, espaiderProvidencias })
     }
 
-    function mergeConfirmedInfo(scrappedInfo, confirmedInfo) {
+    function mergeConfirmedInfo() {
         const { espaiderProcesso, espaiderPartes, espaiderAndamentos, espaiderPedidos } = scrappedInfo
-        const espaiderProcessoMerge = {
-            nucleo: confirmedInfo.nucleo,
-            advogado: confirmedInfo.advogado,
-            causaPedir: confirmedInfo.causaPedir,
-            comarca: confirmedInfo.comarca,
-            dataCitacao: confirmedInfo.dataCitacao,
-            gerencia: confirmedInfo.gerencia,
-            natureza: confirmedInfo.natureza,
-            numeroProcesso: confirmedInfo.numeroProcesso,
-            rito: confirmedInfo.rito,
-            tipoAcao: confirmedInfo.tipoAcao,
-        }
-        const espaiderPartesMerge = {
-            partesRequerentes: confirmedInfo.partesRequerentes,
-            partesRequeridas: confirmedInfo.partesRequeridas
-        }
-
+        const { nucleo, advogado, advogadoGroupSheetName, causaPedir, comarca, dataCitacao, gerencia, natureza, numeroProcesso, rito,
+            tipoAcao, partesRequerentes, partesRequeridas, nomeAndamento, dataAndamento, pedidos, providenciasParams } = confirmedInfo
+        const espaiderProcessoMerge = { nucleo, advogado, advogadoGroupSheetName, causaPedir, comarca, dataCitacao, gerencia, natureza, numeroProcesso, rito, tipoAcao }
+        const espaiderPartesMerge = { partesRequerentes, partesRequeridas }
+        
         const espaiderProcessoMerged = { ...espaiderProcesso, ...espaiderProcessoMerge }
         const espaiderPartesMerged = { ...espaiderPartes, ...espaiderPartesMerge }
-        const espaiderPedidosMerged = [ ...espaiderPedidos, ...confirmedInfo.pedidos ]
+        const espaiderPedidosMerged = [ ...espaiderPedidos, ...pedidos ]
         const espaiderAndamentosMerged = espaiderAndamentos
-        espaiderAndamentosMerged[0].nome = confirmedInfo.nomeAndamento
-        espaiderAndamentosMerged[0].data = confirmedInfo.dataAndamento
+        espaiderAndamentosMerged[0].nome = nomeAndamento
+        espaiderAndamentosMerged[0].data = dataAndamento
 
         const allEspaiderPartes = {
             clientRole: espaiderPartesMerged.clientRole,
             values: [
-            ...espaiderPartesMerged.partesRequerentes,
-            ...espaiderPartesMerged.partesRequeridas,
-            ...espaiderPartesMerged.terceiros
+                ...espaiderPartesMerged.partesRequerentes,
+                ...espaiderPartesMerged.partesRequeridas,
+                ...espaiderPartesMerged.terceiros
             ]
         }
         return {
-            espaiderProcessoMerged,
-            espaiderPartesMerged: allEspaiderPartes,
-            espaiderPedidosMerged,
-            espaiderAndamentosMerged,
-            providenciasParams: confirmedInfo.providenciasParams
+            espaiderProcessoMerged, espaiderPedidosMerged, espaiderAndamentosMerged, providenciasParams,
+            espaiderPartesMerged: allEspaiderPartes
         }
     }
 
-    async function makeFetches(localidadeCode, comarca) {
+    async function makeFetches() {
+        const { localidadeCode, comarca } = confirmedInfo
         const operator = isNumber(localidadeCode) ? "numericEquality" : "insensitiveStrictEquality"
         const unidadeDivisaoPromise = loadSheetRange(planilhaUnidadesELs, null,
             { operator, val: localidadeCode}, false, false)
@@ -100,16 +86,18 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
     }
 
     async function finalAdaptProcesso({ numeroProcesso, nomeAdverso, cpfCnpjAdverso, tipoAdverso, condicaoAdverso,
-        advogadoAdverso, valorCausa, natureza, tipoAcao, causaPedir, orgao, juizo, comarca, rito, nucleo, advogado,
+        advogadoAdverso, valorCausa, natureza, tipoAcao, causaPedir, orgao, juizo, comarca, rito, nucleo, advogado, advogadoGroupSheetName,
         responsavelRegressivo, dataCitacao, gerencia, sistema, errorMsgs }, providenciaSubsidiosDate, unidadeDivisaoFoundEntries) {
         const { unidade, divisao } = await getUnidadeDivisaoFromGoogleRow(unidadeDivisaoFoundEntries)
         const siglaUnidade = unidade.split(" - ")[0]
-        const prepostoNucleo = await getNucleoResp(responsavelType.preposto, gerencia, causaPedir, providenciaSubsidiosDate, siglaUnidade, divisao)
-        
-        return new EspaiderProcessoDataStructure({ numeroProcesso, nomeAdverso, cpfCnpjAdverso, tipoAdverso,
+        const { responsavel: preposto, groupName } = await getNucleoResp(responsavelType.preposto, gerencia, causaPedir, providenciaSubsidiosDate, siglaUnidade, divisao)
+        const espaiderProcesso = new EspaiderProcessoDataStructure({ numeroProcesso, nomeAdverso, cpfCnpjAdverso, tipoAdverso,
             condicaoAdverso, advogadoAdverso, valorCausa, natureza, tipoAcao, causaPedir, unidade, divisao,
-            orgao, juizo, comarca, rito, nucleo, advogado, prepostoNucleo, responsavelRegressivo, dataCitacao: new Date(dataCitacao),
+            orgao, juizo, comarca, rito, nucleo, advogado, preposto, responsavelRegressivo, dataCitacao: new Date(dataCitacao),
             gerencia, sistema, errorMsgs })
+        espaiderProcesso.prepostoGroupSheetName = groupName
+        espaiderProcesso.advogadoGroupSheetName = advogadoGroupSheetName
+        return espaiderProcesso
     }
 
     async function getUnidadeDivisaoFromGoogleRow(foundEntries) {
@@ -118,7 +106,8 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
         return { unidade, divisao }
     }
 
-    function finalAdaptAndamentos(espaiderAndamentos, numeroProcesso) {
+    function finalAdaptAndamentos(espaiderAndamentos) {
+        const { numeroProcesso } = confirmedInfo
         return espaiderAndamentos.map(andamento => {
             const nome = andamento.nome
             const obs = andamento.obs
@@ -129,16 +118,23 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
         })
     }
 
-    async function finalAdaptProvidencias(providenciasParams, nucleo, advogado, preposto, idAndamento) {
-        const providenciasPromises = providenciasParams.map(async (providParamsValues, index) => {
+    async function finalAdaptProvidencias(providenciasParams, espaiderProcesso, idAndamento) {
+        const providenciasValues = await getAdaptedProvidenciasValues(providenciasParams, espaiderProcesso.preposto, idAndamento)
+        const dataToPutOnSheets = getValuesToLaunch(providenciasValues, espaiderProcesso)
+        return { values: providenciasValues, dataToPutOnSheets }
+    }
+
+    async function getAdaptedProvidenciasValues(providenciasParams, preposto, idAndamento) {
+        const providenciasPromises = providenciasParams.values.map(async (providParamsValues, index) => {
             const nome = providParamsValues.nome
             if (nome.toLowerCase() === "analisar processo novo" && !confirmedInfo.recomendarAnalise) return null
-            const responsavel = providParamsValues.tipoResponsavel === "advogado" ? advogado : preposto
+            const responsavel = providParamsValues.tipoResponsavel === "advogado" ? confirmedInfo.advogado : preposto
             const numeroProcesso = providParamsValues.numeroProcesso
             const numeroDesdobramento = providParamsValues.numeroDesdobramento
             const dataFinal = new Date(providParamsValues.dataFinal)
             const alertar = providParamsValues.alertar
             const diasAntecedenciaAlerta = providParamsValues.diasAntecedenciaAlerta
+            const nucleo = confirmedInfo.nucleo
             const gerarAndamento = providParamsValues.gerarAndamento
             const nomeAndamentoParaGerar = providParamsValues.nomeAndamentoParaGerar
             const obs = await getObservacao(nome)
@@ -150,6 +146,24 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
         })
         const providencias = await Promise.all(providenciasPromises)
         return providencias.filter(providencia => !!providencia)
+    }
+
+    function getValuesToLaunch(providencias, espaiderProcesso) {
+        const { advogadoGroupSheetName, prepostoGroupSheetName } = espaiderProcesso
+        const providenciaContestar = providencias.find(providencia => providencia.nome.toLowerCase().includes("contestar"))
+        const providenciaSubsidios = providencias.find(providencia => providencia.nome.toLowerCase().includes("subsídios"))
+        let contestar, subsidios
+        if (providenciaContestar) contestar = {
+            date: providenciaContestar.dataFinal,
+            responsavelName: providenciaContestar.responsavel,
+            sheetName: advogadoGroupSheetName
+        }        
+        if (providenciaSubsidios) subsidios = {
+            date: providenciaSubsidios.dataFinal,
+            responsavelName: providenciaSubsidios.responsavel,
+            sheetName: prepostoGroupSheetName
+        }
+        return [ contestar, subsidios ]
     }
 
     async function getObservacao(nomeProvidencia) {
@@ -193,7 +207,8 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
         return partes.filter(({nome}) => !parteEhEmbasa(nome))
     }
 
-    function finalAdaptPedidos(espaiderPedidos, numeroProcesso, dataCitacao) {
+    function finalAdaptPedidos(espaiderPedidos, dataCitacao) {
+        const { numeroProcesso } = confirmedInfo
         return espaiderPedidos.map(pedido => {
             const id = generatePedidoId(numeroProcesso, pedido.idComponent)
             const nome = pedido.nome
@@ -210,7 +225,8 @@ export default function usePostConfirmationAdapter(scrappedInfo, confirmedInfo, 
         })
     }
 
-    async function adaptMatricula(matricula, numeroProcesso, bloquearMatriculaFoundEntries, gerencia) {
+    async function adaptMatricula(bloquearMatriculaFoundEntries, gerencia) {
+        const { matricula, numeroProcesso } = confirmedInfo
         const bloqueioParams = {
             sim: { negativacao: impedirNegativacaoMatricula.sim, cobranca: impedirCobrancaMatricula.sim },
             nao: { negativacao: impedirNegativacaoMatricula.nao, cobranca: impedirCobrancaMatricula.nao }

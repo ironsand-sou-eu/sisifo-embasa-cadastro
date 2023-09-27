@@ -16,7 +16,7 @@ function App() {
     const [loading, setLoading] = useState({ scrapping: true, creating: false })
     const [result, setResult] = useState({ success: [], processing: [], fail: [] });
     const { msgSetter } = useMsgSetter(result, setResult);
-    const { finalizeProcessoInfo } = usePostConfirmationAdapter(scrappedData, formData, msgSetter)
+    const { finalizeProcessoInfo } = usePostConfirmationAdapter(scrappedData, msgSetter)
 
     useLoadingHandler(scrappedData, setscrappedData)
     const { adaptedInfoHasErrors } = useErrorHandler(scrappedData, msgSetter)
@@ -31,33 +31,27 @@ function App() {
         e.preventDefault()
         setLoading({ scrapping: false, creating: true })
         // console.log({scrappedData, formData})
-        finalizeProcessoInfo()
+        finalizeProcessoInfo(formData)
     }
 
     useEffect(() => {
         if (scrappedData === null) return
         setLoading({ scrapping: false, creating: false })
         if (adaptedInfoHasErrors()) return
+        const {
+            espaiderProcesso: { numeroProcesso, comarca, causaPedir, dataCitacao, advogado, rito, tipoAcao, natureza, gerencia, sistema },
+            espaiderPartes: { partesRequerentes, partesRequeridas },
+            espaiderAndamentos, espaiderPedidos: pedidos
+        } = scrappedData
         const data = {
-            numeroProcesso: scrappedData.espaiderProcesso.numeroProcesso,
-            comarca: scrappedData.espaiderProcesso.comarca,
+            numeroProcesso, comarca, partesRequerentes, partesRequeridas, causaPedir,
+            dataCitacao, advogado, rito, tipoAcao, pedidos, natureza, gerencia, sistema,
             matricula: "",
             localidadeCode: "",
-            partesRequerentes: scrappedData.espaiderPartes.partesRequerentes,
-            partesRequeridas: scrappedData.espaiderPartes.partesRequeridas,
-            nomeAndamento: Array.isArray(scrappedData.espaiderAndamentos) && scrappedData.espaiderAndamentos[0].nome,
-            dataAndamento: Array.isArray(scrappedData.espaiderAndamentos) && scrappedData.espaiderAndamentos[0].data,
-            causaPedir: scrappedData.espaiderProcesso.causaPedir,
-            dataCitacao: scrappedData.espaiderProcesso.dataCitacao,
-            recomendarAnalise: false,
             obsParaAdvogado: "",
-            advogado: scrappedData.espaiderProcesso.advogado,
-            rito: scrappedData.espaiderProcesso.rito,
-            tipoAcao: scrappedData.espaiderProcesso.tipoAcao,
-            pedidos: scrappedData.espaiderPedidos,
-            natureza: scrappedData.espaiderProcesso.natureza,
-            gerencia: scrappedData.espaiderProcesso.gerencia,
-            sistema: scrappedData.espaiderProcesso.sistema
+            nomeAndamento: Array.isArray(espaiderAndamentos) && espaiderAndamentos[0].nome,
+            dataAndamento: Array.isArray(espaiderAndamentos) && espaiderAndamentos[0].data,
+            recomendarAnalise: false,
         }
         setFormData(data)
     }, [scrappedData])
