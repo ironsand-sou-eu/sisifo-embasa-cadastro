@@ -227,6 +227,7 @@ export default function usePostConfirmationAdapter(scrappedInfo, msgSetter) {
 
     async function adaptMatricula(bloquearMatriculaFoundEntries, gerencia) {
         const { matricula, numeroProcesso } = confirmedInfo
+        if (!matricula) return null
         const bloqueioParams = {
             sim: { negativacao: impedirNegativacaoMatricula.sim, cobranca: impedirCobrancaMatricula.sim },
             nao: { negativacao: impedirNegativacaoMatricula.nao, cobranca: impedirCobrancaMatricula.nao }

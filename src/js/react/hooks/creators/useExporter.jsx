@@ -85,7 +85,12 @@ export default function useExporter(msgSetter) {
     }
 
     async function writeMatriculaToSheet(espaiderMatricula, sheetId, token) {
-        const values = [espaiderMatricula].map(({ numeroProcesso, matricula, negativacao, cobranca, pegarHistorico }) => [
+        if (!espaiderMatricula) {
+            espaiderMatricula = []
+        } else {
+            espaiderMatricula = [ espaiderMatricula ]
+        }
+        const values = espaiderMatricula.map(({ numeroProcesso, matricula, negativacao, cobranca, pegarHistorico }) => [
             numeroProcesso, matricula, negativacao, cobranca, pegarHistorico
         ])
         const params = {
