@@ -15,9 +15,8 @@ export default function useIdGenerator() {
     }
 
     function generateId(numeroProcesso, textToAdd) {
-        const baseId = numeroProcesso.replace(".8.05.", "")
-        const fullId = `${baseId}${textToAdd}`
-        const onlyNumbersId = fullId.replace(/[^0-9]/g, '')
+        const baseId = `${numeroProcesso}${textToAdd}`
+        const onlyNumbersId = baseId.replace(/[^0-9]/g, '')
         const idWithoutLeadingZeros = onlyNumbersId.replace(/^0*/g, '')
         return idWithoutLeadingZeros
     }
