@@ -130,7 +130,7 @@ export default function useExporter(msgSetter) {
 
     async function writeAndamentosToSheet(espaiderAndamentos, sheetId, token) {
         const values = espaiderAndamentos.map(({ id, numeroProcesso, numeroDesdobramento, nome, data, obs }) => {
-            const dataString = toBrDateString(data)
+            const dataString = toBrDateString(data, true)
             return [ id, numeroProcesso, numeroDesdobramento, nome, dataString, obs ]
         })
         const params = {
