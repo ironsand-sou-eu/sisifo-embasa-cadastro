@@ -24,10 +24,10 @@ export default function useUpdateCausaPedir(confirmedData, setLoading) {
         const providenciasParams = await getProvidenciasParams(gerencia, causaPedir)
         setFormData(providenciasParams, "providenciasParams")
 
-        const { nucleo, responsavelInfo } = await getNucleoResp(responsavelType.advogado, gerencia, causaPedir, providenciasParams.dates.contestar)
+        const { nucleo, responsavel, groupName } = await getNucleoResp(responsavelType.advogado, gerencia, causaPedir, providenciasParams.dates.contestar)
         setFormData(nucleo, "nucleo")
-        setFormData(responsavelInfo, "advogadoInfo")
-        setFormData(responsavelInfo.nome, "advogado")
+        setFormData(responsavel, "advogado")
+        setFormData(groupName, "advogadoGroupSheetName")
         setLoading({ scrapping: false, creating: false })
     }
 
@@ -59,9 +59,10 @@ export default function useUpdateCausaPedir(confirmedData, setLoading) {
         return found.length > 0 ? [ found[0][1], found[0][2] ] : null
     }
 
-    async function getProvidenciasParams(gerencia, causaPedir) {
-        const foundEntries = await loadSheetRange(planilhaProvidenciasPorGerencia[String(gerencia).toLowerCase()],
-            null, { operator: "insensitiveStrictEquality", val: [confirmedData.comarca, "geral"]}, false, false)
+    async function getProvidenciasParams(gerencia) {
+        const sheetName = planilhaProvidenciasPorGerencia[String(gerencia).toLowerCase()]
+        const foundEntries = await loadSheetRange(sheetName, null,
+            { operator: "insensitiveStrictEquality", val: [confirmedData.comarca, "geral"]}, false, false)
         const values = await Promise.all(foundEntries.map(async sheetRow => {
             const [ , nomeProvidencia, tipoResponsavel, referencialDateType, daysFromReferencialDate, alertar,
                 diasAntecedenciaAlerta, gerarAndamento, nomeAndamentoParaGerar ] = sheetRow
@@ -111,8 +112,8 @@ export default function useUpdateCausaPedir(confirmedData, setLoading) {
         })
         if (!matchingCausaPedirEntry) return null
         const nucleo = matchingCausaPedirEntry[2]
-        const responsavelInfo = await getResponsavelInfo(matchingCausaPedirEntry[3], providenciaDate)
-        return { nucleo, responsavelInfo }
+        const { responsavel, groupName } = await getResponsavelInfo(matchingCausaPedirEntry[3], providenciaDate)
+        return { nucleo, responsavel, groupName }
     }
 
     function getSearchParam(responsavelKind, unidade, el = "") {
@@ -128,7 +129,12 @@ export default function useUpdateCausaPedir(confirmedData, setLoading) {
 
     async function getResponsavelInfo(responsavelString, date) {
         const dateStr = new Date(date).toLocaleDateString("pt-BR")
-        if (!(responsavelString.startsWith("grpadv") || responsavelString.startsWith("grpprep")) ) return responsavelString
+        if (!(responsavelString.startsWith("grpadv") || responsavelString.startsWith("grpprep"))) {
+            return {
+                responsavel: responsavelString,
+                groupName: null
+            }
+        }
         const foundRows = await loadSheetRange(responsavelString, null,
             { operator: "insensitiveStrictEquality", val: ["responsáveis", "% de carga", "% do total de providências", "total", dateStr] },
             false, false)
@@ -158,8 +164,8 @@ export default function useUpdateCausaPedir(confirmedData, setLoading) {
             smallestResponsaveis = [ smallestResponsaveis[randomIndex] ]
         }
         return {
-            nome: smallestResponsaveis[0].responsavel,
-            sheetColumnIndex: smallestResponsaveis[0].sheetColumnIndex
+            responsavel: smallestResponsaveis[0].responsavel,
+            groupName: responsavelString
         }
     }
 

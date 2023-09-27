@@ -5,9 +5,8 @@ import { googleUrls } from "../../../envVars"
 export async function fetchGoogleSheetRowsMatchingExpression(sheetName, expressionToSearch, token, getMany) {
     if (!token) token = await fetchGoogleToken()
     const { fetchGoogleSheetData } = useGoogleSheets()
-    const response = await fetchGoogleSheetData(sheetName, token)
-    const json = await response.json()
-    const values = json?.values
+    const responseJson = await fetchGoogleSheetData(sheetName, token)
+    const values = responseJson?.values
     const errorParams = {
         errorKind: "google",
         missingEntry: expressionToSearch,
@@ -46,7 +45,8 @@ export function useGoogleSheets() {
             range,
             readByColumns
         }
-        return requestGoogleSheetContents(sheetInfo, token)
+        const response = await requestGoogleSheetContents(sheetInfo, token)
+        return await response.json()
     }
 
     function requestGoogleSheetContents(sheetInfo, token) {
@@ -109,7 +109,7 @@ export function useGoogleSheets() {
         return json.id
     }
 
-    async function writeToSheet(workbookId, sheetName, values, token) {
+    async function appendToSheet(workbookId, sheetName, values, token) {
         if (!token) token = await fetchGoogleToken()
         const qsParams = new URLSearchParams()
         qsParams.set("valueInputOption", "RAW")
@@ -131,9 +131,30 @@ export function useGoogleSheets() {
         return await response.json()
     }
 
+    async function writeToRange(workbookId, sheetAndRangeName, values, token) {
+        if (!token) token = await fetchGoogleToken()
+        const qsParams = new URLSearchParams()
+        qsParams.set("valueInputOption", "RAW")
+        const queryString = qsParams.toString()
+        const uri = `${googleUrls.sheetsApiBase}${workbookId}/values/${sheetAndRangeName}?${queryString}`
+        const params = {
+            method: 'PUT',
+            async: true,
+            headers: {
+                Authorization: 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                majorDimension: "ROWS",
+                values
+            })
+        }
+        const response = await fetch(uri, params)
+        return await response.json()
+    }
+
     async function loadSheetRange (sheetName, rangeName, filterObject = undefined, shallMap = true, readByColumns = false, workbookId) {
-        const response = await fetchGoogleSheetData(sheetName, null, workbookId, rangeName, readByColumns)
-        const responseJson = await response.json()
+        const responseJson = await fetchGoogleSheetData(sheetName, null, workbookId, rangeName, readByColumns)
         let filteredOptions
         if (rangeName) filteredOptions = responseJson.values[0]
         else filteredOptions = responseJson.values
@@ -160,6 +181,5 @@ export function useGoogleSheets() {
             return filteredOptions
         }
     }
-
-    return { fetchGoogleToken, fetchGoogleSheetData, getFileId, createSheet, loadSheetRange, writeToSheet, googleUrls }
+    return { fetchGoogleToken, fetchGoogleSheetData, getFileId, createSheet, loadSheetRange, appendToSheet, writeToRange, googleUrls }
 }

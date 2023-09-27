@@ -1,15 +1,16 @@
 import { operators } from "../../../enums";
+import { googleUrls } from "../../../envVars";
 import ProcessoAlreadyExistsException from "../../../exceptions/ProcessoAlreadyExistsException";
 import hardcoded from "../../../hardcodedValues";
 import { toBrDateString } from "../../../utils/utils";
 import { useGoogleSheets } from "../connectors/useGoogleSheets";
 
 export default function useExporter(msgSetter) {
-    const { fetchGoogleToken, getFileId, createSheet, loadSheetRange, writeToSheet } = useGoogleSheets()
+    const { fetchGoogleToken, getFileId, createSheet, fetchGoogleSheetData, loadSheetRange, appendToSheet, writeToRange } = useGoogleSheets()
     async function createAll({
         espaiderProcesso, espaiderMatricula, espaiderPartesComCpfCnpj, espaiderPartesSemCpfCnpj,
-        espaiderAndamentos, espaiderProvidencias, espaiderPedidos }
-    ) {
+        espaiderAndamentos, espaiderProvidencias, espaiderPedidos
+    }) {
         const token = await fetchGoogleToken()
         const sheetId = await getSheetIdCreatingIfNeeded(token)
         if (await processoAlreadyExists(sheetId, espaiderProcesso.numeroProcesso)) {
@@ -20,7 +21,8 @@ export default function useExporter(msgSetter) {
         await writeLitisconsortesToSheet(espaiderPartesComCpfCnpj, true, sheetId, token)
         await writeLitisconsortesToSheet(espaiderPartesSemCpfCnpj, false, sheetId, token)
         await writeAndamentosToSheet(espaiderAndamentos, sheetId, token)
-        await writeProvidenciasToSheet(espaiderProvidencias, sheetId, token)
+        await writeProvidenciasToSheet(espaiderProvidencias.values, sheetId, token)
+        registerProvidenciasInGroups(espaiderProvidencias.dataToPutOnSheets, token)
         await writePedidosToSheet(espaiderPedidos, sheetId, token)
         msgSetter.clear({ type: "processing" })
     }
@@ -169,6 +171,33 @@ export default function useExporter(msgSetter) {
         await writeEntitiesToSheet(params)
     }
 
+    function registerProvidenciasInGroups(relevantProvidenciasData, token) {
+        const registerableProvidencias = relevantProvidenciasData.filter(providencia => !!providencia.sheetName)
+        registerableProvidencias.forEach(async providenciaData => {
+            const { sheetName, responsavelName, date } = providenciaData
+            const fullSheetDataJson = await fetchGoogleSheetData(sheetName)
+            const { cellInA1Notation, value } = getCellAndValue(date, responsavelName, fullSheetDataJson.values)
+            const rangeName = `${sheetName}!${cellInA1Notation}`
+            const valueToWrite = [[ value + 1 ]]
+            await writeToRange(googleUrls.configSheetId, rangeName, valueToWrite, token, false)
+        })
+    }
+
+    function getCellAndValue(date, responsavelName, sheetData) {
+        const responsaveisRowData = sheetData.filter(row => String(row[0]).toLowerCase() === "responsáveis")
+        const columnIndex = responsaveisRowData[0].findIndex(entry => entry === responsavelName)
+        const dateStr = new Date(date).toLocaleDateString("pt-BR")
+        const rowIndex = sheetData.findIndex(row => String(row[0]).toLowerCase() === dateStr)
+        const value = parseInt(sheetData[rowIndex][columnIndex])
+        const cellInA1Notation = getA1Notation(rowIndex, columnIndex)
+        return { cellInA1Notation, value }
+    }
+
+    function getA1Notation(rowIndex, columnIndex) {
+        const columnNames = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"]
+        return `${columnNames[columnIndex]}${rowIndex + 1}`
+    }
+
     async function writePedidosToSheet(espaiderPedidos, sheetId, token) {
         const values = espaiderPedidos.map(({
             id, numeroProcesso, nome, valor, databaseAtualizacao, riscoOriginal, riscoBaseadoEm,
@@ -201,7 +230,7 @@ export default function useExporter(msgSetter) {
         const { entitiesArray, sheetId, token, sheetName, msgs } = creationParams
         const qtd = entitiesArray.length
         msgSetter.setSingleProcessingMsg(`${msgs.update} (${qtd})...`)
-        const jSonResponse = await writeToSheet(sheetId, sheetName, entitiesArray, token)
+        const jSonResponse = await appendToSheet(sheetId, sheetName, entitiesArray, token)
         // const requestSuccessful = (jSonResponse.status && jSonResponse.status >=200 && jSonResponse.status < 300 )
         const createdRowsAmount = jSonResponse.updates.updatedRows ?? 0
         const creationSuccessful = createdRowsAmount === qtd
