@@ -18,3 +18,6 @@
 1.0.301 - ISSUE - Implementada verificação para a data
     final da providênica não cair num fim de semana.
 
+1.0.302 - ISSUE - Implementada a possibilidade de não
+    se cadastrar matrícula.
+
