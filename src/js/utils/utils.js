@@ -54,7 +54,7 @@ export function lastWorkdayUntil(date) {
     if (date.getDay() === 0) weekendDaysToSubtract = 2
     if (date.getDay() === 6) weekendDaysToSubtract = 1
     //TODO: compute holidays
-    return addDaysToDate(calculatedDate, weekendDaysToSubtract)
+    return addDaysToDate(date, weekendDaysToSubtract)
 }
 
 export function addDaysToDate(date, daysToAdd) {
