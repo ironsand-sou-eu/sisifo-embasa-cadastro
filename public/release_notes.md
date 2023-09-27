@@ -33,3 +33,8 @@
     (podia ter números coincidentes em outros tri-
     bunais).
 
+1.0.404 - ISSUE - Corrigidos os campos de valor do
+    pedido, valor provisionado e dias de antece-
+    dência do alerta para irem com o tipo numérico
+    (em vez de texto).
+

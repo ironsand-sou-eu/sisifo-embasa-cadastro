@@ -72,9 +72,9 @@ export default function useUpdateCausaPedir(confirmedData, setLoading) {
                 numeroProcesso: confirmedData.numeroProcesso,
                 numeroDesdobramento: confirmedData.numeroProcesso,
                 nome: nomeProvidencia,
-                dataFinal, tipoResponsavel, referencialDateType,
-                daysFromReferencialDate, alertar, diasAntecedenciaAlerta,
-                gerarAndamento, nomeAndamentoParaGerar
+                diasAntecedenciaAlerta: parseInt(diasAntecedenciaAlerta),
+                dataFinal, tipoResponsavel, referencialDateType, daysFromReferencialDate,
+                alertar, gerarAndamento, nomeAndamentoParaGerar
             }
         }))
         const provContestar = values.find(providencia => providencia.nome.toLowerCase() === "contestar - virtual")
