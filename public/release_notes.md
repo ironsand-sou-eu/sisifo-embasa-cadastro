@@ -21,3 +21,15 @@
 1.0.302 - ISSUE - Implementada a possibilidade de não
     se cadastrar matrícula.
 
+===================== Versão 1.0.5 ====================
+1.0.401 - ISSUE - Corrigida a data final das audiên-
+    cias (estava adicionando em vez de subtrair, ao
+    compensar os fins de semana).
+
+1.0.402 - ISSUE - Corrigida a data de andamento (es-
+    tava indo só a data, sem a hora).
+
+1.0.403 - ISSUE - AndamentiId agora mantém o "805"
+    (podia ter números coincidentes em outros tri-
+    bunais).
+
