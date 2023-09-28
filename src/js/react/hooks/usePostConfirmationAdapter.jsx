@@ -212,11 +212,11 @@ export default function usePostConfirmationAdapter(scrappedInfo, msgSetter) {
         return espaiderPedidos.map(pedido => {
             const id = generatePedidoId(numeroProcesso, pedido.idComponent)
             const nome = pedido.nome
-            const valor = parseFloat(pedido.valorPedido?.replace(".", "").replace(",", "."))
+            const valor = pedido.valorPedido
             const databaseAtualizacao = dataCitacao
             const databaseJuros = dataCitacao
             const riscoOriginal = pedido.estimativaTipo
-            const valorRiscoOriginal = parseFloat(pedido.valorProvisionado?.replace(".", "").replace(",", "."))
+            const valorRiscoOriginal = pedido.valorProvisionado
             const estimativaPagamento = new Date(dataCitacao.getTime() + 365 * 24 * 60 * 60 * 1000)
             return new EspaiderPedidoDataStructure({
                 id, numeroProcesso, nome, valor, databaseAtualizacao, databaseJuros,
