@@ -2,7 +2,7 @@ export default function useSelectAdapter() {
     function objectifyToSelect(value, label = value) {
         return {
             label: label,
-            value: value
+            value: value ?? ""
         }
     }
 
