@@ -227,7 +227,7 @@ export default function usePostConfirmationAdapter(scrappedInfo, msgSetter) {
 
     async function adaptMatricula(bloquearMatriculaFoundEntries, gerencia) {
         const { matricula, numeroProcesso } = confirmedInfo
-        if (!matricula) return null
+        if (!matricula) return []
         const bloqueioParams = {
             sim: { negativacao: impedirNegativacaoMatricula.sim, cobranca: impedirCobrancaMatricula.sim },
             nao: { negativacao: impedirNegativacaoMatricula.nao, cobranca: impedirCobrancaMatricula.nao }
@@ -235,7 +235,7 @@ export default function usePostConfirmationAdapter(scrappedInfo, msgSetter) {
         const shouldBlock = await bloquearMatricula(bloquearMatriculaFoundEntries, gerencia)
         const res = bloqueioParams[shouldBlock]
         const { negativacao, cobranca } = bloqueioParams[shouldBlock]
-        return new EspaiderMatriculaDataStructure({ matricula, numeroProcesso, negativacao, cobranca })
+        return [ new EspaiderMatriculaDataStructure({ matricula, numeroProcesso, negativacao, cobranca }) ]
     }
 
     async function bloquearMatricula(foundEntries, gerencia) {
