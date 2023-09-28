@@ -16,7 +16,6 @@ class Drafter {
     }
 
     async draftProcessoInfo() {
-    // nomeAndamentoAdicional, obsAndamentoAdicional, dataAndamentoAdicional, strIdAndamentoAdicional
         if (Drafter.hasErrors([this.#processoInfo])) return { hasErrors: true, errorMsgs: this.#processoInfo.errorMsgs }
         
         const espaiderPartes = await this.#getAdaptedPartes()

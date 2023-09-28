@@ -19,16 +19,7 @@ const textualReferenceType = {
 };
 
 const gSheetUrl = {
-    vara: googleUrls.sheetsFrontendBase + googleUrls.juizosSheetId,
-    tipoVara: googleUrls.sheetsFrontendBase + googleUrls.juizosSheetId,
-    instanciaCnj: googleUrls.sheetsFrontendBase + googleUrls.juizosSheetId,
-    orgaoJudicial: googleUrls.sheetsFrontendBase + googleUrls.juizosSheetId,
-    tipoJustica: googleUrls.sheetsFrontendBase + googleUrls.juizosSheetId,
-    juizo: googleUrls.sheetsFrontendBase + googleUrls.juizosSheetId,
-    andamento: googleUrls.sheetsFrontendBase + googleUrls.andamentosSheetId,
-    tarefa: googleUrls.sheetsFrontendBase + googleUrls.tarefasSheetId,
-    gts: googleUrls.sheetsFrontendBase + googleUrls.gtsSheetId,
-    pedido: googleUrls.sheetsFrontendBase + googleUrls.pedidosProvisionamentosSheetId
+    juizo: googleUrls.sheetsFrontendBase + googleUrls.juizosSheet
 };
 
 function linkOrText(type, text) {

@@ -8,7 +8,7 @@ class EspaiderProcessoDataStructure
         peticionamento = hardcoded.peticionamento, nomeEmbasa = hardcoded.nomeEmbasa,
         cnpjEmbasa = hardcoded.cnpjEmbasa, tipoEmpresaEmbasa = hardcoded.tipoEmpresaEmbasa,
         condicaoEmpresaEmbasa = hardcoded.condicaoEmpresaEmbasa, nomeDesdobramento = hardcoded.nomeDesdobramento,
-        fase = hardcoded.fase, classe = hardcoded.classeProcesso })
+        fase = hardcoded.fase, classe = hardcoded.classeProcesso } = {})
     {
         Object.assign(this, {
             numeroProcesso, nomeAdverso, cpfCnpjAdverso, tipoAdverso, condicaoAdverso,

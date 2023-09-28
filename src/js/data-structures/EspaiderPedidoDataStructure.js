@@ -8,7 +8,7 @@ class EspaiderPedidoDataStructure
         riscoBaseadoEm = hardcoded.riscoBaseadoEmPedido,
         indiceAtualizacao = hardcoded.indiceAtualizacaoPedido,
         porcentagemJuros = hardcoded.porcentagemJuros
-    }) {
+    } = {}) {
         Object.assign(this, {
             id, nome, valor, riscoOriginal, riscoBaseadoEm, valorRiscoOriginal,
             estimativaPagamento, indiceAtualizacao, porcentagemJuros, numeroProcesso,
