@@ -3,9 +3,11 @@ import { gerencias, planilhaProvidenciasPorGerencia,
 import hardcoded from "../../hardcodedValues"
 import { addDaysToDate, lastWorkdayUntil } from "../../utils/utils"
 import { useGoogleSheets } from "./connectors/useGoogleSheets"
+import useCurrencyFormater from "./useCurrencyFormater"
 
 export default function useUpdateCausaPedir(confirmedData, setLoading) {
     const { loadSheetRange } = useGoogleSheets()
+    const { formatStringToNumber } = useCurrencyFormater()
 
     async function updateCausaPedir(causaPedir, setFormData) {
         if (!confirmedData) return
@@ -51,7 +53,7 @@ export default function useUpdateCausaPedir(confirmedData, setLoading) {
         return foundEntries.map(entry => {
             const [, pedidoCodName, estimativaTipo, valorProvisionado] = entry
             const [ nome, idComponent ] = getPedidosNameAndIdComponentByCode(pedidoCodName, allPedidosCodesAndNames)
-            return { nome, idComponent, estimativaTipo, valorProvisionado }
+            return { nome, idComponent, estimativaTipo, valorProvisionado: formatStringToNumber(valorProvisionado) }
         })
     }
     
