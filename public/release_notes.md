@@ -38,3 +38,11 @@
     dência do alerta para irem com o tipo numérico
     (em vez de texto).
 
+===================== Versão 1.0.6 ====================
+1.0.501 - FEATURE - Criada mensagem de erro amigável
+    para quando o juízo não está na planilha do Google.
+
+1.0.502 - ISSUE - Ajustados os pedidos, que não esta-
+    vam sendo criados quando se alterava o valor ou
+    quando se colocava um pedido novo.
+
