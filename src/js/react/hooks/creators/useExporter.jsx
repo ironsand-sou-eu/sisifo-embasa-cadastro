@@ -229,8 +229,9 @@ export default function useExporter(msgSetter) {
     async function writeEntitiesToSheet(creationParams) {
         const { entitiesArray, sheetId, token, sheetName, msgs } = creationParams
         const qtd = entitiesArray.length
+        const finalArray = changeNullsToEmptyStringsInArrayOfArrays(entitiesArray)
         msgSetter.setSingleProcessingMsg(`${msgs.update} (${qtd})...`)
-        const jSonResponse = await appendToSheet(sheetId, sheetName, entitiesArray, token)
+        const jSonResponse = await appendToSheet(sheetId, sheetName, finalArray, token)
         // const requestSuccessful = (jSonResponse.status && jSonResponse.status >=200 && jSonResponse.status < 300 )
         const createdRowsAmount = jSonResponse.updates.updatedRows ?? 0
         const creationSuccessful = createdRowsAmount === qtd
@@ -241,6 +242,12 @@ export default function useExporter(msgSetter) {
             return
         }
         msgSetter.addMsg({ type: "success", msg: `${createdRowsAmount}/${qtd} ${msgs.success}` })
+    }
+
+    function changeNullsToEmptyStringsInArrayOfArrays(array) {
+        return array.map(entity => {
+            return entity.map(value => value ?? "")
+        })
     }
 
     return { createAll }
