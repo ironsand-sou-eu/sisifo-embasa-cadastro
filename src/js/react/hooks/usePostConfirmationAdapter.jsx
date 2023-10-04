@@ -189,13 +189,15 @@ export default function usePostConfirmationAdapter(scrappedInfo, msgSetter) {
         deleteFirstParte(values)
         const litisconsortes = stripPartesEmbasa(values)
         return litisconsortes.map(litisconsorte => {
+            const { numeroProcesso } = confirmedInfo
+            const numeroDesdobramento = numeroProcesso
             const nome = litisconsorte.nome
             const cpfCnpj = litisconsorte.cpfCnpj
             const tipo = litisconsorte.tipo
             const condicao = litisconsorte.condicao
             const classe = litisconsorte.classe
             const semCpfCnpj = litisconsorte.semCpfCnpj
-            return new EspaiderParteDataStructure({ nome, cpfCnpj, tipo, condicao, classe, semCpfCnpj })
+            return new EspaiderParteDataStructure({ numeroProcesso, numeroDesdobramento, nome, cpfCnpj, tipo, condicao, classe, semCpfCnpj })
         })
     }
 
