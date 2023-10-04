@@ -46,3 +46,11 @@
     vam sendo criados quando se alterava o valor ou
     quando se colocava um pedido novo.
 
+===================== Versão 1.0.7 ====================
+1.0.601 - ISSUE - Ajustado o problema que fazia os li-
+    tisconsortes serem cadastrados sem número de pro-
+    cesso nem desdobramento.
+
+1.0.602 - ISSUE - Ajustado o problema de envio de va-
+    lores nulos na planilha.
+
