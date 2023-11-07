@@ -181,5 +181,5 @@ export function useGoogleSheets() {
             return filteredOptions
         }
     }
-    return { fetchGoogleToken, fetchGoogleSheetData, getFileId, createSheet, loadSheetRange, appendToSheet, writeToRange, googleUrls }
+    return { fetchGoogleToken, fetchGoogleSheetData, getFileId, createSheet, loadSheetRange, appendToSheet, writeToRange }
 }

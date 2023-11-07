@@ -54,3 +54,7 @@
 1.0.602 - ISSUE - Ajustado o problema de envio de va-
     lores nulos na planilha.
 
+===================== Versão 1.0.8 ====================
+1.0.701 - ISSUE - Ajustado o erro ao cadastrar proces-
+    sos que tiveram a audiência cancelada.
+

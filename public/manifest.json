@@ -1,73 +1,62 @@
 {
-    "manifest_version": 3,
-    
-    "name": "Sísifo Embasa - Cadastro",
-    "description": "Esta extensão facilita o cadastro de processos da Procuradoria Jurídica da Embasa",
-    "author": "César Rodriguez",
-    "version": "1.0.7",
+  "manifest_version": 3,
 
-    "action": {
-        "default_icon": {
-            "16": "images/sisifo-ico-16.png",
-            "32": "images/sisifo-ico-32.png",
-            "128": "images/sisifo-ico-128.png",
-            "192": "images/sisifo-ico-192.png"
-        },
-        "default_title": "Sísifo Embasa - Cadastro",
-        "default_popup": "popup.html"
+  "name": "Sísifo Embasa - Cadastro",
+  "description": "Esta extensão facilita o cadastro de processos da Procuradoria Jurídica da Embasa",
+  "author": "César Rodriguez",
+  "version": "1.0.8",
+
+  "action": {
+    "default_icon": {
+      "16": "images/sisifo-ico-16.png",
+      "32": "images/sisifo-ico-32.png",
+      "128": "images/sisifo-ico-128.png",
+      "192": "images/sisifo-ico-192.png"
     },
+    "default_title": "Sísifo Embasa - Cadastro",
+    "default_popup": "popup.html"
+  },
 
-    "options_ui": {
-        "page": "options.html",
-        "open_in_tab": false
-    },
-    
-    "icons": {
-        "16": "images/sisifo-ico-16.png",
-        "32": "images/sisifo-ico-32.png",
-        "128": "images/sisifo-ico-128.png",
-        "192": "images/sisifo-ico-192.png"
-    },
-    
-    "permissions": [
-        "identity",
-        "storage"
-    ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
 
-    "host_permissions": [
-        "*://projudi.tjba.jus.br/*",
-        "*://pje.tjba.jus.br/*"
-    ],
-    
-    "background": {
-        "service_worker": "worker.js"
-    },
-    
-    "content_scripts": [{
-        "matches": [
-            "https://projudi.tjba.jus.br/*",
-            "https://pje.tjba.jus.br/*"
-        ],
-        "all_frames": true,
-        "run_at": "document_end",
-        "js": [
-            "content.js"
-        ]
-    }],
+  "icons": {
+    "16": "images/sisifo-ico-16.png",
+    "32": "images/sisifo-ico-32.png",
+    "128": "images/sisifo-ico-128.png",
+    "192": "images/sisifo-ico-192.png"
+  },
 
-    "web_accessible_resources": [{
-        "resources": ["timelineLoader.js"],
-        "matches": ["https://pje.tjba.jus.br/*"]
+  "permissions": ["identity", "storage"],
 
-    }],
+  "host_permissions": ["*://projudi.tjba.jus.br/*", "*://pje.tjba.jus.br/*"],
 
-    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgZCrMKxeloqHZpXIyOpewGstq/YTcav2ag3DRB7rwtph1I1kAiFTOHmKyBySrFDwFmOgECMByV1mIQRewX0BVKpjM3Z35zjwr1HHwAIskAIXFgwTCbHGH0OhcT4LFVvlqOozD6nPbEeMnRVaO0wPaeDHoXOTWPjqfeCX21HMsoBeVyYcYv/YCTJEqv1ImPi8qnekgtRpGV2+XOgIduR0bKIQGNo8n2yYxhidWWvJJp3C5UCUw739k2E3mrQRf7I/TE5tJvSp0p1+jxFWtOUuP/0ecg6MtPeIj2u7J3Wq/92nljxPZfDkoXOkxMDrYvWpexoT6yput3t/KWAFNStT1wIDAQAB",
+  "background": {
+    "service_worker": "worker.js"
+  },
 
-    "oauth2": {
-        "client_id": "98082471964-iorhk299dhghj0r6hk16koe4bt36bq87.apps.googleusercontent.com",
-        "scopes": [
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
+  "content_scripts": [
+    {
+      "matches": ["https://projudi.tjba.jus.br/*", "https://pje.tjba.jus.br/*"],
+      "all_frames": true,
+      "run_at": "document_end",
+      "js": ["content.js"]
     }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["timelineLoader.js"],
+      "matches": ["https://pje.tjba.jus.br/*"]
+    }
+  ],
+
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgZCrMKxeloqHZpXIyOpewGstq/YTcav2ag3DRB7rwtph1I1kAiFTOHmKyBySrFDwFmOgECMByV1mIQRewX0BVKpjM3Z35zjwr1HHwAIskAIXFgwTCbHGH0OhcT4LFVvlqOozD6nPbEeMnRVaO0wPaeDHoXOTWPjqfeCX21HMsoBeVyYcYv/YCTJEqv1ImPi8qnekgtRpGV2+XOgIduR0bKIQGNo8n2yYxhidWWvJJp3C5UCUw739k2E3mrQRf7I/TE5tJvSp0p1+jxFWtOUuP/0ecg6MtPeIj2u7J3Wq/92nljxPZfDkoXOkxMDrYvWpexoT6yput3t/KWAFNStT1wIDAQAB",
+
+  "oauth2": {
+    "client_id": "98082471964-iorhk299dhghj0r6hk16koe4bt36bq87.apps.googleusercontent.com",
+    "scopes": ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+  }
 }
