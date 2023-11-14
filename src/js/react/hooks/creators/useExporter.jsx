@@ -2,8 +2,11 @@ import { operators } from "../../../enums";
 import { googleUrls } from "../../../envVars";
 import ProcessoAlreadyExistsException from "../../../exceptions/ProcessoAlreadyExistsException";
 import hardcoded from "../../../hardcodedValues";
-import { toBrDateString } from "../../../utils/utils";
-import { useGoogleSheets } from "../connectors/useGoogleSheets";
+import {
+  getOrCreateTodaysCurrentSheetInLocalStorage,
+  toBrDateString,
+} from "../../../utils/utils";
+import useGoogleSheets from "../connectors/useGoogleSheets";
 
 export default function useExporter(msgSetter) {
   const {
@@ -69,11 +72,8 @@ export default function useExporter(msgSetter) {
     const month = String(dt.getMonth() + 1).padStart(2, "0");
     const day = String(dt.getDate()).padStart(2, "0");
     const dateString = `${year}.${month}.${day}`;
-    const todaysLastSheet = (localStorage.getItem(dateString) ?? "1").padStart(
-      2,
-      "0"
-    );
-    return `Sisifo - Processos - ${dateString}.${todaysLastSheet}`;
+    const todaysCurrentSheet = getOrCreateTodaysCurrentSheetInLocalStorage();
+    return `Sisifo - Processos - ${dateString}.${todaysCurrentSheet}`;
   }
 
   async function processoAlreadyExists(workbookId, numeroProcesso) {
