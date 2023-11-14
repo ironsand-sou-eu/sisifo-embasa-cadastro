@@ -1,13 +1,16 @@
-import React from "react"
+import React from "react";
 
-function SelectInput(props) {
-    return (
-        <div className="col-sm-8">
-            <div className="inputGroupContainer">
-                <a href={props.url} target="_blank">{props.label}</a>
-            </div>
-        </div>
-    )
+function SelectInput({ url, label, classes, styles }) {
+  return (
+    <a
+      className={"inputGroupContainer col-sm-8" + classes ? ` ${classes}` : ""}
+      style={styles}
+      href={url}
+      target="_blank"
+    >
+      {label}
+    </a>
+  );
 }
 
-export default SelectInput
+export default SelectInput;
