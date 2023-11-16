@@ -84,8 +84,8 @@ export function parteEhEmbasa(nome) {
   );
 }
 
-export function getOrCreateTodaysCurrentSheetInLocalStorage() {
-  const currentSheet = JSON.parse(localStorage.getItem("currentSheet"));
+export async function getOrCreateTodaysCurrentSheetInLocalStorage() {
+  const { currentSheet } = await chrome.storage.local.get("currentSheet");
   if (
     currentSheet &&
     new Date(currentSheet.date).toLocaleDateString("pt-BR") ===
@@ -97,6 +97,6 @@ export function getOrCreateTodaysCurrentSheetInLocalStorage() {
     date: new Date().toISOString().substring(0, 10),
     number: "01",
   };
-  localStorage.setItem("currentSheet", JSON.stringify(newSheet));
+  await chrome.storage.local.set({ currentSheet: newSheet });
   return newSheet;
 }
