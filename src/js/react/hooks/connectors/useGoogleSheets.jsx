@@ -92,8 +92,10 @@ export default function useGoogleSheets() {
     const folderId = googleUrls.generatedSheetsFolderId;
     const dateString = new Date(date).toISOString().substring(0, 10);
     const searchTerm = `mimeType='${googleUrls.sheetMimeType}' and trashed = false and createdTime >= '${dateString}T00:00' and createdTime <= '${dateString}T23:59' and '${folderId}' in parents`;
+    const desiredFields = "files(id,name,createdTime)";
     const qsParams = new URLSearchParams();
     qsParams.set("q", searchTerm);
+    qsParams.set("fields", desiredFields);
     const queryString = qsParams.toString();
     const uri = `${googleUrls.driveApiBase}?${queryString}`;
     const params = {

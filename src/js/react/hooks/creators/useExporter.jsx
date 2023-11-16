@@ -67,13 +67,8 @@ export default function useExporter(msgSetter) {
   }
 
   function generateSheetName() {
-    const dt = new Date();
-    const year = dt.getFullYear();
-    const month = String(dt.getMonth() + 1).padStart(2, "0");
-    const day = String(dt.getDate()).padStart(2, "0");
-    const dateString = `${year}.${month}.${day}`;
-    const todaysCurrentSheet = getOrCreateTodaysCurrentSheetInLocalStorage();
-    return `Sisifo - Processos - ${dateString}.${todaysCurrentSheet}`;
+    const { date, number } = getOrCreateTodaysCurrentSheetInLocalStorage();
+    return `Sisifo - Processos - ${date}.${number}`;
   }
 
   async function processoAlreadyExists(workbookId, numeroProcesso) {

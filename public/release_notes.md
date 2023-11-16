@@ -58,3 +58,10 @@
 1.0.701 - ISSUE - Ajustado o erro ao cadastrar proces-
     sos que tiveram a audiência cancelada.
 
+===================== Versão 1.1.0 ====================
+1.0.801 - FEATURE - Ajustado para funcionar com múlti-
+  plas planilhas, em vez de uma para manhã e uma para
+  tarde.
+
+
+

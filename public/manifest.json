@@ -4,7 +4,7 @@
   "name": "Sísifo Embasa - Cadastro",
   "description": "Esta extensão facilita o cadastro de processos da Procuradoria Jurídica da Embasa",
   "author": "César Rodriguez",
-  "version": "1.0.8",
+  "version": "1.1.0",
 
   "action": {
     "default_icon": {
@@ -57,6 +57,9 @@
 
   "oauth2": {
     "client_id": "98082471964-iorhk299dhghj0r6hk16koe4bt36bq87.apps.googleusercontent.com",
-    "scopes": ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+    "scopes": [
+      "https://www.googleapis.com/auth/spreadsheets",
+      "https://www.googleapis.com/auth/drive"
+    ]
   }
 }
