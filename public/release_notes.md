@@ -63,5 +63,9 @@
   plas planilhas, em vez de uma para manhã e uma para
   tarde.
 
+===================== Versão 1.1.1 ====================
+1.1.001 - ISSUE - Ajustado o problema pelo qual o
+  Sísifo não reconhecia as novas planilhas.
+
 
 

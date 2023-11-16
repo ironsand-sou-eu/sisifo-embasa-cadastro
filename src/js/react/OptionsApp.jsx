@@ -3,10 +3,13 @@ import Link from "./components/Link";
 import useOptionsLoadingHandler from "./hooks/useOptionsLoadingHandler";
 import { getOrCreateTodaysCurrentSheetInLocalStorage } from "../utils/utils";
 
-function updateLocalStorageToNextSheet() {
-  const { date, number } = getOrCreateTodaysCurrentSheetInLocalStorage();
-  const newSheet = { date, number: `${parseInt(number) + 1}`.padStart(2, "0") };
-  localStorage.setItem("currentSheet", JSON.stringify(newSheet));
+async function updateLocalStorageToNextSheet() {
+  const { date, number } = await getOrCreateTodaysCurrentSheetInLocalStorage();
+  const newSheet = {
+    date,
+    number: `${parseInt(number) + 1}`.padStart(2, "0"),
+  };
+  await chrome.storage.local.set({ currentSheet: newSheet });
 }
 
 export default function OptionsApp() {
