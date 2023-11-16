@@ -5,10 +5,10 @@ import Messenger from "./Messenger";
 function Button({ label, warningMessages, missingEssential }) {
   const loading = useContext(LoadingContext);
   const isLoading = loading.scrapping || loading.creating;
-  const open = warningMessages?.length == 0 ? " open" : "";
+  const open = warningMessages?.length == 0 ? true : false;
   return (
     <>
-      <div className={`capped-btn-container${open}`}>
+      <div className={"capped-btn-container"} open={open}>
         <button
           type="submit"
           className="btn btn-warning capped-btn"

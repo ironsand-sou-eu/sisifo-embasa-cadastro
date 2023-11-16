@@ -67,5 +67,9 @@
 1.1.001 - ISSUE - Ajustado o problema pelo qual o
   Sísifo não reconhecia as novas planilhas.
 
+1.1.002 - ISSUE - Resolvido o problema do botão cadas-
+  trar que não estava abrindo sozinho, mesmo com as
+  informações completas.
+
 
 
