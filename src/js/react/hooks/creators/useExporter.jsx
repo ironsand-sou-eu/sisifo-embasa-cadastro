@@ -60,14 +60,15 @@ export default function useExporter(msgSetter) {
     msgSetter.setSingleProcessingMsg(
       "Identificando planilha no Google Sheets..."
     );
-    const sheetFileName = generateSheetName();
+    const sheetFileName = await generateSheetName();
     let sheetId = await getFileId(sheetFileName, token);
     if (!sheetId) sheetId = createSheet(sheetFileName, token);
     return sheetId;
   }
 
-  function generateSheetName() {
-    const { date, number } = getOrCreateTodaysCurrentSheetInLocalStorage();
+  async function generateSheetName() {
+    const { date, number } =
+      await getOrCreateTodaysCurrentSheetInLocalStorage();
     return `Sisifo - Processos - ${date}.${number}`;
   }
 

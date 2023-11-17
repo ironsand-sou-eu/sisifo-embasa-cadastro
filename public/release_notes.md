@@ -71,5 +71,7 @@
   trar que não estava abrindo sozinho, mesmo com as
   informações completas.
 
-
+===================== Versão 1.1.2 ====================
+1.1.101 - ISSUE - resolvido o problema de não geração
+  das planilhas múltiplas.
 
