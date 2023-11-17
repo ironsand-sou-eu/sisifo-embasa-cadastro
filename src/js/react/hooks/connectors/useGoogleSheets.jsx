@@ -1,4 +1,4 @@
-import generateErrMsg from "../../../exceptions/error-message-generator";
+import { generateErrMsg } from "../../../exceptions/error-message-generator";
 import compareWithOperator from "../../../utils/utils";
 import { googleUrls } from "../../../envVars";
 

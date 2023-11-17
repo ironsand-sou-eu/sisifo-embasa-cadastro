@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { LoadingContext } from "../App";
 import Messenger from "./Messenger";
 
-function Button({ label, warningMessages, missingEssential }) {
+export default function Button({ label, warningMessages, missingEssential }) {
   const loading = useContext(LoadingContext);
   const isLoading = loading.scrapping || loading.creating;
   const open = warningMessages?.length == 0 ? true : false;
@@ -99,5 +99,3 @@ function Button({ label, warningMessages, missingEssential }) {
     </>
   );
 }
-
-export default Button;

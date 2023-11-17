@@ -1,12 +1,11 @@
 import EspaiderProcessoDataStructure from "../data-structures/EspaiderProcessoDataStructure";
-import generateErrMsg from "../exceptions/error-message-generator";
+import { generateErrMsg } from "../exceptions/error-message-generator";
 import { sistemas, tiposParte, tiposParteEspaider } from "../enums";
 import hardcoded from "../hardcodedValues";
 import { parteEhEmbasa } from "../utils/utils";
 import { fetchGoogleSheetRowsMatchingExpression } from "../react/hooks/connectors/useGoogleSheets";
 
-class Drafter {
-  static #errorMsgFallback = "Ocorreu uma falha, vide mensagens de erro";
+export default class Drafter {
   #processoInfo;
   #googleToken;
 
@@ -16,13 +15,20 @@ class Drafter {
   }
 
   async draftProcessoInfo() {
-    if (Drafter.hasErrors([this.#processoInfo])) return { hasErrors: true, errorMsgs: this.#processoInfo.errorMsgs };
+    if (Drafter.hasErrors([this.#processoInfo]))
+      return { hasErrors: true, errorMsgs: this.#processoInfo.errorMsgs };
 
     const espaiderPartes = await this.#getAdaptedPartes();
     const espaiderProcesso = await this.#getAdaptedProcesso(espaiderPartes);
-    const espaiderAndamentos = await this.#getAdaptedAndamentos(espaiderProcesso);
+    const espaiderAndamentos = await this.#getAdaptedAndamentos(
+      espaiderProcesso
+    );
     const espaiderPedidos = await this.#getAdaptedPedidos();
-    const errors = Drafter.hasErrors([espaiderProcesso, espaiderAndamentos, espaiderPedidos]);
+    const errors = Drafter.hasErrors([
+      espaiderProcesso,
+      espaiderAndamentos,
+      espaiderPedidos,
+    ]);
     if (errors) return { hasErrors: true, errorMsgs: errors };
     return {
       espaiderProcesso,
@@ -52,11 +58,22 @@ class Drafter {
       terceiros: [],
       clientRole: null,
     };
-    this.#pushAdaptedPartesIntoPolo(this.#processoInfo.partesRequerentes, espaiderPartes.partesRequerentes);
-    this.#pushAdaptedPartesIntoPolo(this.#processoInfo.partesRequeridas, espaiderPartes.partesRequeridas);
-    this.#pushAdaptedPartesIntoPolo(this.#processoInfo.outrosParticipantes, espaiderPartes.terceiros);
-    if (this.#clienteIsInPolo(espaiderPartes.partesRequerentes)) espaiderPartes.clientRole = tiposParte.requerente;
-    if (this.#clienteIsInPolo(espaiderPartes.partesRequeridas)) espaiderPartes.clientRole = tiposParte.requerido;
+    this.#pushAdaptedPartesIntoPolo(
+      this.#processoInfo.partesRequerentes,
+      espaiderPartes.partesRequerentes
+    );
+    this.#pushAdaptedPartesIntoPolo(
+      this.#processoInfo.partesRequeridas,
+      espaiderPartes.partesRequeridas
+    );
+    this.#pushAdaptedPartesIntoPolo(
+      this.#processoInfo.outrosParticipantes,
+      espaiderPartes.terceiros
+    );
+    if (this.#clienteIsInPolo(espaiderPartes.partesRequerentes))
+      espaiderPartes.clientRole = tiposParte.requerente;
+    if (this.#clienteIsInPolo(espaiderPartes.partesRequeridas))
+      espaiderPartes.clientRole = tiposParte.requerido;
     return espaiderPartes;
   }
 
@@ -78,11 +95,16 @@ class Drafter {
       tipo = tiposParte.pessoaFisica;
     } else {
       cpfCnpj = parte.cpf ?? parte.cnpj;
-      tipo = cpfCnpj.includes("/") ? tiposParteEspaider.pessoaJuridica : tiposParteEspaider.pessoaFisica;
+      tipo = cpfCnpj.includes("/")
+        ? tiposParteEspaider.pessoaJuridica
+        : tiposParteEspaider.pessoaFisica;
     }
-    const condicao = parte.tipoDeParte.charAt(0).toUpperCase() + parte.tipoDeParte.substring(1).toLowerCase();
+    const condicao =
+      parte.tipoDeParte.charAt(0).toUpperCase() +
+      parte.tipoDeParte.substring(1).toLowerCase();
     const classe = parte.tipoDeParte === tiposParte.requerente ? 2 : 1;
-    const nomeAdvogado = parte.advogados.length > 0 ? parte.advogados[0].nome : null;
+    const nomeAdvogado =
+      parte.advogados.length > 0 ? parte.advogados[0].nome : null;
     return { nome, cpfCnpj, semCpfCnpj, tipo, condicao, classe, nomeAdvogado };
   }
 
@@ -101,8 +123,13 @@ class Drafter {
     const valorCausa = this.#processoInfo.valorDaCausa;
     const sistema = this.#processoInfo.sistema;
     const dataCitacao = new Date();
-    const { nomeAdverso, cpfCnpjAdverso, tipoAdverso, condicaoAdverso, advogadoAdverso } =
-      this.#getAdversoinfo(espaiderPartes);
+    const {
+      nomeAdverso,
+      cpfCnpjAdverso,
+      tipoAdverso,
+      condicaoAdverso,
+      advogadoAdverso,
+    } = this.#getAdversoinfo(espaiderPartes);
     const { tipoAcao, rito } = this.#getTipoAcaoAndRito(sistema);
     const googleJuizoInfo = await fetchGoogleSheetRowsMatchingExpression(
       "juizos",
@@ -112,7 +139,10 @@ class Drafter {
     if (!googleJuizoInfo.found) {
       const espaiderProcesso = new EspaiderProcessoDataStructure();
       espaiderProcesso.errorMsgs.push(
-        generateErrMsg.noMatchInGoogle(this.#processoInfo.juizo.nomeOriginalSistemaJustica, "juizo")
+        generateErrMsg.noMatchInGoogle(
+          this.#processoInfo.juizo.nomeOriginalSistemaJustica,
+          "juizo"
+        )
       );
       return espaiderProcesso;
     }
@@ -158,16 +188,27 @@ class Drafter {
   }
 
   #getTipoAcaoAndRito(sistema, classePje = undefined) {
-    if (sistema === sistemas.projudiTjba) return { tipoAcao: hardcoded.juizadosTipoAcao, rito: hardcoded.juizadosRito };
+    if (sistema === sistemas.projudiTjba)
+      return {
+        tipoAcao: hardcoded.juizadosTipoAcao,
+        rito: hardcoded.juizadosRito,
+      };
     // TODO: Fazer PJE
   }
 
   async #getAdaptedAndamentos(espaiderProcesso) {
     const espaiderAndamentos = { values: [], errorMsgs: [] };
-    if (!this.#processoInfo.audienciaFutura || this.#processoInfo.audienciaFutura.cancelado === true) {
-      espaiderAndamentos.values = [this.#adaptCitacaoToEspaider(espaiderProcesso)];
+    if (
+      !this.#processoInfo.audienciaFutura ||
+      this.#processoInfo.audienciaFutura.cancelado === true
+    ) {
+      espaiderAndamentos.values = [
+        this.#adaptCitacaoToEspaider(espaiderProcesso),
+      ];
     } else {
-      espaiderAndamentos.values = [this.#adaptAudienciaToEspaider(this.#processoInfo.audienciaFutura)];
+      espaiderAndamentos.values = [
+        this.#adaptAudienciaToEspaider(this.#processoInfo.audienciaFutura),
+      ];
     }
     // TODO: andamento adicional para PJe
     return espaiderAndamentos;
@@ -189,7 +230,9 @@ class Drafter {
     if (!audienciaFutura.data) return null;
     const data = new Date(audienciaFutura.data);
     const cabecalhoObs = `Ev./ID ${audienciaFutura.id} - ${audienciaFutura.nomeOriginalSistemaJustica}. `;
-    const detalhe = audienciaFutura.observacao ? ` - ${audienciaFutura.observacao}` : "";
+    const detalhe = audienciaFutura.observacao
+      ? ` - ${audienciaFutura.observacao}`
+      : "";
     const obs = cabecalhoObs + detalhe;
     return {
       obs,
@@ -205,4 +248,3 @@ class Drafter {
     return { values: [], errorMsgs: [] };
   }
 }
-export default Drafter;

@@ -12,12 +12,8 @@ import {
   planilhaUnidadesELs,
   responsavelType,
 } from "../../enums";
-import Exception from "../../exceptions/Exception";
-import generateErrMsg from "../../exceptions/error-message-generator";
-import hardcoded from "../../hardcodedValues";
 import useUpdateCausaPedir from "./useUpdateCausaPedir";
 import useIdGenerator from "./useIdGenerator";
-import Drafter from "../../adapters/drafter";
 import { isNumber, parteEhEmbasa } from "../../utils/utils";
 import useGoogleSheets from "./connectors/useGoogleSheets";
 import useExporter from "./creators/useExporter";

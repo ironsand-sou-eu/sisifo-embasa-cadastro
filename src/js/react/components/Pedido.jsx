@@ -9,7 +9,7 @@ import useGoogleSheets from "../hooks/connectors/useGoogleSheets";
 
 const { loadSheetRange } = useGoogleSheets();
 
-function Pedido({ index, pedido, onChange }) {
+export default function Pedido({ index, pedido, onChange }) {
   const { formatNumberToPtbrString, formatStringToNumber } =
     useCurrencyFormater();
   const { objectifyToSelect, deobjectifyFromSelect } = useSelectAdapter();
@@ -116,5 +116,3 @@ function Pedido({ index, pedido, onChange }) {
     </div>
   );
 }
-
-export default Pedido;

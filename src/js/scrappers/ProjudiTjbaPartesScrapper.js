@@ -2,7 +2,7 @@ import ParteDataStructure from "../data-structures/ParteDataStructure";
 import NotProcessoHomepageException from "../exceptions/NotProcessoHomepageException";
 import { tiposParte } from "../enums";
 
-class ProjudiTjbaPartesScrapper {
+export default class ProjudiTjbaPartesScrapper {
   static #divPartesTbody;
 
   /**
@@ -196,4 +196,3 @@ class ProjudiTjbaPartesScrapper {
     return result;
   }
 }
-export default ProjudiTjbaPartesScrapper;
