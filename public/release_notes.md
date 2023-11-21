@@ -76,6 +76,10 @@
   das planilhas múltiplas.
 
 ===================== Versão 1.1.3 ====================
-1.1.101 - ISSUE - Bugfix de versão sobre o problema de
+1.1.102 - ISSUE - Bugfix de versão sobre o problema de
   não geração das planilhas múltiplas.
+
+===================== Versão 1.1.4 ====================
+1.1.103 - ISSUE - Bugfix da situação quando o CPF não
+  está cadastrado.
 

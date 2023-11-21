@@ -102,7 +102,7 @@ export default class ProjudiTjbaPartesScrapper {
       parte.cpf = cpfCnpj;
     if (cpfCnpj.length === 18 && dashDotSlashStrippedString.length === 14)
       parte.cnpj = cpfCnpj;
-    if (cpfCnpj === "Não Cadastrado") {
+    if (cpfCnpj.toLowerCase() === "não cadastrado") {
       parte.dontHaveCpfCnpj = true;
       parte.noCpfCnpjReason = "Não cadastrado no Projudi";
     }
