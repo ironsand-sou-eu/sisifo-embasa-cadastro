@@ -75,3 +75,7 @@
 1.1.101 - ISSUE - resolvido o problema de não geração
   das planilhas múltiplas.
 
+===================== Versão 1.1.3 ====================
+1.1.101 - ISSUE - Bugfix de versão sobre o problema de
+  não geração das planilhas múltiplas.
+

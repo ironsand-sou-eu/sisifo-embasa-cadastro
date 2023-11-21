@@ -9,6 +9,7 @@ async function updateLocalStorageToNextSheet() {
     date,
     number: `${parseInt(number) + 1}`.padStart(2, "0"),
   };
+  console.log({ date, number, newSheet });
   await chrome.storage.local.set({ currentSheet: newSheet });
 }
 
