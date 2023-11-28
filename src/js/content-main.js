@@ -1,17 +1,13 @@
-import NotProcessoHomepageException from "./exceptions/NotProcessoHomepageException";
-import Pje1gTjbaProcessoScrapper from "./scrappers/Pje1gTjbaProcessoScrapper";
-import ProjudiTjbaProcessoScrapper from "./scrappers/ProjudiTjbaProcessoScrapper";
+import {
+  identifyCorrectScrapper,
+  NotProcessoHomepageException,
+} from "brazilian-courts-scrappers";
 
 const DOMAINS = {
   TJBA: {
     projudi: "projudi.tjba.jus.br",
     pje1g: "pje.tjba.jus.br",
   },
-};
-
-const SCRAPPERS = {
-  "projudi.tjba.jus.br": ProjudiTjbaProcessoScrapper,
-  "pje.tjba.jus.br": Pje1gTjbaProcessoScrapper,
 };
 
 const urlObj = new URL(document.URL);
@@ -43,19 +39,20 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     msg.subject === "attempted-start-scrapping"
   ) {
     try {
-      const scrapper = identifyCorrectScrapper();
-      if (!scrapper.checkProcessoHomepage(document.URL)) return;
-      scrapper.fetchProcessoInfo().then(processoInfo => {
-        sendResponse(processoInfo);
-      });
+      const scrapperClass = identifyCorrectScrapper(document);
+      const scrapper = new scrapperClass(document);
+      if (!scrapper.checkProcessoHomepage()) {
+        return;
+      }
+      scrapper
+        .fetchProcessoInfo()
+        .then(processoInfo => {
+          sendResponse(processoInfo);
+        })
+        .catch(e => console.error(e));
       return true;
     } catch (e) {
       if (!(e instanceof NotProcessoHomepageException)) console.error(e);
     }
   }
 });
-
-function identifyCorrectScrapper() {
-  const url = new URL(document.URL);
-  return SCRAPPERS[url.hostname];
-}
