@@ -34,25 +34,20 @@ chrome.runtime.sendMessage(
 );
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (
-    msg.from === "sisifoWorker" &&
-    msg.subject === "attempted-start-scrapping"
-  ) {
+  if (msg.subject === "attempted-start-scrapping") {
     try {
       const scrapperClass = identifyCorrectScrapper(document);
       const scrapper = new scrapperClass(document);
-      if (!scrapper.checkProcessoHomepage()) {
-        return;
-      }
+      if (!scrapper.checkProcessoHomepage()) return;
       scrapper
         .fetchProcessoInfo()
         .then(processoInfo => {
           sendResponse(processoInfo);
         })
         .catch(e => console.error(e));
-      return true;
     } catch (e) {
-      if (!(e instanceof NotProcessoHomepageException)) console.error(e);
+      if (!(e instanceof NotProcessoHomepageException)) sendResponse(e);
     }
+    return true;
   }
 });
