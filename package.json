@@ -1,6 +1,6 @@
 {
   "name": "sisifo-embasa-cadastro",
-  "version": "0.0.1",
+  "version": "1.1.5",
   "description": "Esta extensão destina-se às integrações digitais da Procuradoria Jurídica da Embasa",
   "private": true,
   "type": "module",

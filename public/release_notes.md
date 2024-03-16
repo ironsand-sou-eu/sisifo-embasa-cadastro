@@ -76,10 +76,14 @@
   das planilhas múltiplas.
 
 ===================== Versão 1.1.3 ====================
-1.1.102 - ISSUE - Bugfix de versão sobre o problema de
+1.1.201 - ISSUE - Bugfix de versão sobre o problema de
   não geração das planilhas múltiplas.
 
 ===================== Versão 1.1.4 ====================
-1.1.103 - ISSUE - Bugfix da situação quando o CPF não
+1.1.301 - ISSUE - Bugfix da situação quando o CPF não
   está cadastrado.
+
+===================== Versão 1.1.5 ====================
+1.1.401 - ISSUE - Bugfix do cálculo de prazo quando a
+  providência cai no Sábado.
 
