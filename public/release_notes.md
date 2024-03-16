@@ -81,13 +81,6 @@
 
 ===================== Versão 1.1.4 ====================
 1.1.301 - ISSUE - Bugfix da situação quando o CPF não
-<<<<<<< HEAD
-=======
-  está cadastrado.
-
-===================== Versão 1.1.5 ====================
-1.1.401 - ISSUE - Bugfix da situação quando o CPF não
->>>>>>> 3003be358115998f669192c5271763069827f364
   está cadastrado.
 
 ===================== Versão 1.1.5 ====================
