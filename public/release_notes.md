@@ -87,3 +87,7 @@
 1.1.401 - ISSUE - Bugfix do cálculo de prazo quando a
   providência cai no Sábado.
 
+
+===================== Versão 1.1.6 ====================
+1.1.501 - ISSUE - Bugfix da largura da tela.
+
