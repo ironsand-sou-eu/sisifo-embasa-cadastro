@@ -1,11 +1,12 @@
 :root {
-  --ruy-andrade-color: 13, 72, 42;
+  --main-theme-color: 13, 72, 42;
+  --app-width: 775px;
 }
 
 body {
-  color: rgb(var(--ruy-andrade-color));
+  color: rgb(var(--main-theme-color));
   width: 98vw;
-  min-width: 98vw;
+  min-width: var(--app-width);
 }
 
 ul {
@@ -17,7 +18,7 @@ form {
 }
 
 fieldset {
-  border-color: rgba(var(--ruy-andrade-color), 0.3);
+  border-color: rgba(var(--main-theme-color), 0.3);
   border-radius: 0.7rem;
   border-style: solid;
   border-width: 1px;
@@ -128,7 +129,7 @@ div > .one-liner {
 }
 
 .add {
-  fill: rgb(var(--ruy-andrade-color));
+  fill: rgb(var(--main-theme-color));
 }
 
 .trash {
